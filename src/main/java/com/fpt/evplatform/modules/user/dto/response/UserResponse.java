@@ -3,9 +3,7 @@ package com.fpt.evplatform.modules.user.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 import java.math.BigDecimal;
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 
 @Data
