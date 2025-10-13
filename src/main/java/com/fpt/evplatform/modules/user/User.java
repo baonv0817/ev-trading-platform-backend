@@ -3,10 +3,12 @@ package com.fpt.evplatform.modules.user;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.security.Timestamp;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -19,7 +21,7 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    Integer userId;
 
     @Column(unique = true, nullable = false)
     String username;
@@ -42,10 +44,20 @@ public class User {
     String bio;
     @Column(nullable = false)
     Integer planId;
-
     String planStatus;
-    Timestamp startAt;
-    Timestamp endAt;
-    Timestamp createdAt;
-    Timestamp updatedAt;
+    LocalDateTime startAt;
+    LocalDateTime endAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

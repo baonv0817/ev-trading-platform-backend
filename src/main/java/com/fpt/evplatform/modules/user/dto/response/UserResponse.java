@@ -1,0 +1,35 @@
+package com.fpt.evplatform.modules.user.dto.response;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.math.BigDecimal;
+import java.security.Timestamp;
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserResponse {
+    Integer userId;
+    String username;
+    String firstName;
+    String lastName;
+    String email;
+    String phone;
+    BigDecimal wallet;
+    Integer provinceCode;
+    Integer districtCode;
+    Integer wardCode;
+    String bio;
+    Integer planId;
+    String planStatus;
+    LocalDateTime startAt;
+    LocalDateTime endAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
+}
