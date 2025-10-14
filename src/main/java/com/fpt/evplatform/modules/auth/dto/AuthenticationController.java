@@ -3,6 +3,8 @@ package com.fpt.evplatform.modules.auth.dto;
 import com.fpt.evplatform.common.dto.ApiResponse;
 import com.fpt.evplatform.modules.auth.dto.request.AuthenticationRequest;
 import com.fpt.evplatform.modules.auth.dto.request.IntrospectRequest;
+import com.fpt.evplatform.modules.auth.dto.request.LogoutRequest;
+import com.fpt.evplatform.modules.auth.dto.request.RefreshRequest;
 import com.fpt.evplatform.modules.auth.dto.response.AuthenticationResponse;
 import com.fpt.evplatform.modules.auth.dto.response.IntrospectResponse;
 import com.nimbusds.jose.JOSEException;
@@ -37,6 +39,23 @@ public class AuthenticationController {
         var result = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout()
+            throws ParseException, JOSEException {
+        return ApiResponse.<Void>builder()
+                .message("Logged out successfully")
                 .build();
     }
 }
