@@ -41,6 +41,7 @@ public class User {
     @Column(nullable = false)
     Integer planId;
     String planStatus;
+    String role;
     LocalDateTime startAt;
     LocalDateTime endAt;
     LocalDateTime createdAt;

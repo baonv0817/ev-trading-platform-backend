@@ -1,4 +1,4 @@
-package com.fpt.evplatform.common.exception;
+package com.fpt.evplatform.common.enums;
 
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),

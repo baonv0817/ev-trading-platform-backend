@@ -1,5 +1,6 @@
 package com.fpt.evplatform.common.exception;
 import com.fpt.evplatform.common.dto.ApiResponse;
+import com.fpt.evplatform.common.enums.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

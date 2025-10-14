@@ -1,5 +1,7 @@
 package com.fpt.evplatform.common.exception;
 
+import com.fpt.evplatform.common.enums.ErrorCode;
+
 public class AppException extends RuntimeException{
 
     public AppException(ErrorCode errorCode) {
