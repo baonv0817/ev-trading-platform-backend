@@ -53,7 +53,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     ApiResponse<Void> logout()
-            throws ParseException, JOSEException {
+            throws JOSEException {
         return ApiResponse.<Void>builder()
                 .message("Logged out successfully")
                 .build();

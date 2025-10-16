@@ -17,7 +17,8 @@ spring:
       hibernate.format_sql: true
 
 jwt:
-  signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  signerKey: "3i4yH3g3L3bZxDzrVgOZfXSVwDtvpQfVq4m1F3fQp1W1XHrHVhJ4K0Zb3XnZLq4uB5mEoH6d5qVnXx8yO2T0w=="
+
 
 #logging:
 #  level:
