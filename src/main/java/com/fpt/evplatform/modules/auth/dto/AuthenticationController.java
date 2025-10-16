@@ -3,7 +3,6 @@ package com.fpt.evplatform.modules.auth.dto;
 import com.fpt.evplatform.common.dto.ApiResponse;
 import com.fpt.evplatform.modules.auth.dto.request.AuthenticationRequest;
 import com.fpt.evplatform.modules.auth.dto.request.IntrospectRequest;
-import com.fpt.evplatform.modules.auth.dto.request.LogoutRequest;
 import com.fpt.evplatform.modules.auth.dto.request.RefreshRequest;
 import com.fpt.evplatform.modules.auth.dto.response.AuthenticationResponse;
 import com.fpt.evplatform.modules.auth.dto.response.IntrospectResponse;
@@ -52,8 +51,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    ApiResponse<Void> logout()
-            throws JOSEException {
+    ApiResponse<Void> logout() {
         return ApiResponse.<Void>builder()
                 .message("Logged out successfully")
                 .build();
