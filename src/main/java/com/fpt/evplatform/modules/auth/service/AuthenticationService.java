@@ -1,4 +1,4 @@
-package com.fpt.evplatform.modules.auth.dto;
+package com.fpt.evplatform.modules.auth.service;
 
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.common.exception.AppException;
@@ -7,8 +7,8 @@ import com.fpt.evplatform.modules.auth.dto.request.IntrospectRequest;
 import com.fpt.evplatform.modules.auth.dto.request.RefreshRequest;
 import com.fpt.evplatform.modules.auth.dto.response.AuthenticationResponse;
 import com.fpt.evplatform.modules.auth.dto.response.IntrospectResponse;
-import com.fpt.evplatform.modules.user.User;
-import com.fpt.evplatform.modules.user.UserRepository;
+import com.fpt.evplatform.modules.user.entity.User;
+import com.fpt.evplatform.modules.user.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;

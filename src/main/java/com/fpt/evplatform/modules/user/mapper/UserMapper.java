@@ -1,6 +1,6 @@
 package com.fpt.evplatform.modules.user.mapper;
 
-import com.fpt.evplatform.modules.user.User;
+import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.dto.request.UserCreationRequest;
 import com.fpt.evplatform.modules.user.dto.request.UserUpdateRequest;
 import com.fpt.evplatform.modules.user.dto.response.UserResponse;

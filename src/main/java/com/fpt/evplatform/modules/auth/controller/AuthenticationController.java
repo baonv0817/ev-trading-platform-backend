@@ -1,6 +1,7 @@
-package com.fpt.evplatform.modules.auth.dto;
+package com.fpt.evplatform.modules.auth.controller;
 
 import com.fpt.evplatform.common.dto.ApiResponse;
+import com.fpt.evplatform.modules.auth.service.AuthenticationService;
 import com.fpt.evplatform.modules.auth.dto.request.AuthenticationRequest;
 import com.fpt.evplatform.modules.auth.dto.request.IntrospectRequest;
 import com.fpt.evplatform.modules.auth.dto.request.RefreshRequest;

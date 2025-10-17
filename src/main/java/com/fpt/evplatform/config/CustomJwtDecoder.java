@@ -1,6 +1,6 @@
 package com.fpt.evplatform.config;
 
-import com.fpt.evplatform.modules.auth.dto.AuthenticationService;
+import com.fpt.evplatform.modules.auth.service.AuthenticationService;
 import com.fpt.evplatform.modules.auth.dto.request.IntrospectRequest;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;

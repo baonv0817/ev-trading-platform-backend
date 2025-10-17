@@ -1,5 +1,6 @@
-package com.fpt.evplatform.modules.user;
+package com.fpt.evplatform.modules.user.entity;
 
+import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -38,8 +39,9 @@ public class User {
     Integer wardCode;
 
     String bio;
-    @Column(nullable = false)
-    Integer planId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id")
+    MembershipPlan plan;
     String planStatus;
     String role;
     LocalDateTime startAt;

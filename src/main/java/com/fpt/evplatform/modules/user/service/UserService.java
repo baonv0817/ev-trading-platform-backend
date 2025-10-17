@@ -1,11 +1,15 @@
-package com.fpt.evplatform.modules.user;
+package com.fpt.evplatform.modules.user.service;
 
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.common.enums.ErrorCode;
+import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
+import com.fpt.evplatform.modules.membership.repository.MembershipPlanRepository;
 import com.fpt.evplatform.modules.user.dto.request.UserCreationRequest;
 import com.fpt.evplatform.modules.user.dto.request.UserUpdateRequest;
 import com.fpt.evplatform.modules.user.dto.response.UserResponse;
+import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.mapper.UserMapper;
+import com.fpt.evplatform.modules.user.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +29,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    MembershipPlanRepository membershipPlanRepository;
 
     public UserResponse createUser(UserCreationRequest request, String role){
         if (userRepository.existsByUsername(request.getUsername()))
@@ -32,9 +37,10 @@ public class UserService {
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPlanId(1);
+        MembershipPlan defaultPlan = membershipPlanRepository.findByName("Free")
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+        user.setPlan(defaultPlan);
         user.setRole(role);
-        user.setPlanStatus("FREE");
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
