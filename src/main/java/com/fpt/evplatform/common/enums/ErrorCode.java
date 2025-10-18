@@ -16,7 +16,12 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     PLAN_NOT_FOUND(2001, "Membership plan not found", HttpStatus.NOT_FOUND),
-    PLAN_EXISTED(2002, "Membership plan existed", HttpStatus.BAD_REQUEST)
+    PLAN_EXISTED(2002, "Membership plan existed", HttpStatus.BAD_REQUEST),
+    PAYMENT_FAILED(3001, "Payment failed", HttpStatus.PAYMENT_REQUIRED),
+    PAYMENT_METADATA_MISSING(3002, "Payment metadata is missing", HttpStatus.BAD_REQUEST),
+    PAYMENT_FORBIDDEN(3003, "Payment is forbidden", HttpStatus.FORBIDDEN)
+
+
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

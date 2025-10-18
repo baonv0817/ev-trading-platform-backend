@@ -53,22 +53,61 @@ public class MembershipPlanService {
         membershipPlanRepository.deleteById(planId);
     }
 
-    public void activatePlan(String username, ActivatePlanRequest request) {
+//    public void activatePlan(String username, ActivatePlanRequest request) {
+//        User user = userRepo.findByUsername(username)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+//
+//        MembershipPlan plan = membershipPlanRepository.findById(request.getPlanId())
+//                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+//
+//        LocalDateTime startAt = LocalDateTime.now();
+//        LocalDateTime endAt = startAt.plusDays(plan.getDurationDays());
+//
+//        user.setPlan(plan);
+//        user.setPlanStatus("ACTIVE");
+//        user.setStartAt(startAt);
+//        user.setEndAt(endAt);
+//        userRepo.save(user);
+//    }
+
+    public UserPlanResponse activatePlan(String username, ActivatePlanRequest request) {
         User user = userRepo.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         MembershipPlan plan = membershipPlanRepository.findById(request.getPlanId())
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
-        LocalDateTime startAt = LocalDateTime.now();
-        LocalDateTime endAt = startAt.plusDays(plan.getDurationDays());
+        Integer duration = plan.getDurationDays();
+
+        // Nếu user còn hạn, nối tiếp thời gian
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime baseTime = now;
+        if (user.getEndAt() != null && user.getEndAt().isAfter(now)) {
+            baseTime = user.getEndAt();
+        }
+
+        LocalDateTime startAt = now;
+        LocalDateTime endAt = baseTime.plusDays(duration);
 
         user.setPlan(plan);
         user.setPlanStatus("ACTIVE");
         user.setStartAt(startAt);
         user.setEndAt(endAt);
+
         userRepo.save(user);
+
+        // 👉 Build response
+        UserPlanResponse response = new UserPlanResponse();
+        response.setPlanId(plan.getPlanId());
+        response.setPlanName(plan.getName());
+        response.setPrice(plan.getPrice());
+        response.setStatus(user.getPlanStatus());
+        response.setStartAt(user.getStartAt());
+        response.setEndAt(user.getEndAt());
+
+        return response;
     }
+
 
     public void cancelPlan(String username) {
         User user = userRepo.findByUsername(username)
