@@ -1,6 +1,6 @@
-package com.fpt.evplatform.modules.batteryPost.repository;
+package com.fpt.evplatform.modules.batterypost.repository;
 
-import com.fpt.evplatform.modules.batteryPost.entity.BatteryPost;
+import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

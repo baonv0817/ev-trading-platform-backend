@@ -41,7 +41,9 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
         user.setPlan(defaultPlan);
         user.setRole(role);
-        return userMapper.toUserResponse(userRepository.save(user));
+        userRepository.save(user);
+        System.out.println(user);
+        return userMapper.toUserResponse(user);
     }
 
     public void deleteUser(Integer userId){

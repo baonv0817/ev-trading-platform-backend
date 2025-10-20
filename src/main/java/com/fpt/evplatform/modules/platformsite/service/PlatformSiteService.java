@@ -1,4 +1,4 @@
-package com.fpt.evplatform.modules.batteryPost.service;
+package com.fpt.evplatform.modules.platformsite.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class BatteryPostService {
+public class PlatformSiteService {
 }

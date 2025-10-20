@@ -1,6 +1,6 @@
-package com.fpt.evplatform.modules.platformSite.repository;
+package com.fpt.evplatform.modules.platformsite.repository;
 
-import com.fpt.evplatform.modules.platformSite.entity.PlatformSite;
+import com.fpt.evplatform.modules.platformsite.entity.PlatformSite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

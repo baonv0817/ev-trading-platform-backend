@@ -1,4 +1,4 @@
-package com.fpt.evplatform.modules.batteryPost.entity;
+package com.fpt.evplatform.modules.batterypost.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,10 +14,10 @@ import lombok.experimental.FieldDefaults;
 public class BatteryPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int batteryId;
+    Integer batteryId;
 
-    String chemicalName;
-    double capacityKwh;
-    int sohPercent;
-    int cycleCount;
+    String chemistryName;
+    Double capacityKwh;
+    Integer sohPercent;
+    Integer cycleCount;
 }

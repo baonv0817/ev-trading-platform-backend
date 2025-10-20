@@ -19,8 +19,14 @@ public enum ErrorCode {
     PLAN_EXISTED(2002, "Membership plan existed", HttpStatus.BAD_REQUEST),
     PAYMENT_FAILED(3001, "Payment failed", HttpStatus.PAYMENT_REQUIRED),
     PAYMENT_METADATA_MISSING(3002, "Payment metadata is missing", HttpStatus.BAD_REQUEST),
-    PAYMENT_FORBIDDEN(3003, "Payment is forbidden", HttpStatus.FORBIDDEN)
-
+    PAYMENT_FORBIDDEN(3003, "Payment is forbidden", HttpStatus.FORBIDDEN),
+    SALE_POST_MEMBERSHIP_REQUIRED(4001, "You must have an active membership plan to create a sale post", HttpStatus.FORBIDDEN),
+    SALE_POST_PLAN_EXPIRED(4002, "Your membership plan has expired", HttpStatus.FORBIDDEN),
+    SALE_POST_LIMIT_REACHED(4003, "You have reached the maximum number of sale posts allowed for your plan", HttpStatus.BAD_REQUEST),
+    BATTERY_DETAIL_REQUIRED(4101, "Battery detail is required for BATTERY product type", HttpStatus.BAD_REQUEST),
+    VEHICLE_DETAIL_REQUIRED(4102, "Vehicle detail is required for VEHICLE product type", HttpStatus.BAD_REQUEST),
+    BATTERY_DETAIL_MUST_BE_NULL(4103, "Battery detail must be null for VEHICLE product type", HttpStatus.BAD_REQUEST),
+    VEHICLE_DETAIL_MUST_BE_NULL(4104, "Vehicle detail must be null for BATTERY product type", HttpStatus.BAD_REQUEST)
 
     ;
 
