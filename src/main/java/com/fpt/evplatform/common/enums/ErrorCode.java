@@ -26,8 +26,11 @@ public enum ErrorCode {
     BATTERY_DETAIL_REQUIRED(4101, "Battery detail is required for BATTERY product type", HttpStatus.BAD_REQUEST),
     VEHICLE_DETAIL_REQUIRED(4102, "Vehicle detail is required for VEHICLE product type", HttpStatus.BAD_REQUEST),
     BATTERY_DETAIL_MUST_BE_NULL(4103, "Battery detail must be null for VEHICLE product type", HttpStatus.BAD_REQUEST),
-    VEHICLE_DETAIL_MUST_BE_NULL(4104, "Vehicle detail must be null for BATTERY product type", HttpStatus.BAD_REQUEST)
-
+    VEHICLE_DETAIL_MUST_BE_NULL(4104, "Vehicle detail must be null for BATTERY product type", HttpStatus.BAD_REQUEST),
+    BRAND_ALREADY_EXISTED(5001, "Brand is already existed", HttpStatus.BAD_REQUEST),
+    BRAND_NOT_FOUND(5002, "Brand not found", HttpStatus.NOT_FOUND),
+    MODEL_NOT_FOUND(5003, "Model not found", HttpStatus.NOT_FOUND),
+    MODEL_ALREADY_EXISTED(5004, "Model already existed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

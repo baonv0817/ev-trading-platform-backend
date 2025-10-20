@@ -22,4 +22,5 @@ public class PlatformSite {
     int wardCode;
     String street;
     boolean active;
+
 }

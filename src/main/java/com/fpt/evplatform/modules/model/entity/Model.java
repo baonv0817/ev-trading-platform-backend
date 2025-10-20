@@ -1,21 +1,25 @@
-package com.fpt.evplatform.modules.brand.entity;
+package com.fpt.evplatform.modules.model.entity;
 
+import com.fpt.evplatform.modules.brand.entity.Brand;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "brands")
+@Table(name = "models")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Brand {
+public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer brandId;
+    Integer modelId;
 
-    @Column(unique = true, nullable = false)
     String name;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "brand_id")
+    Brand brand;
 }
