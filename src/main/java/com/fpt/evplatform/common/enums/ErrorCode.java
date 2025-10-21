@@ -31,6 +31,9 @@ public enum ErrorCode {
     BRAND_NOT_FOUND(5002, "Brand not found", HttpStatus.NOT_FOUND),
     MODEL_NOT_FOUND(5003, "Model not found", HttpStatus.NOT_FOUND),
     MODEL_ALREADY_EXISTED(5004, "Model already existed", HttpStatus.BAD_REQUEST),
+    LISTING_NOT_FOUND(5005, "Listing not found", HttpStatus.NOT_FOUND),
+    FAVORITE_NOT_FOUND(5006, "Favorite not found", HttpStatus.NOT_FOUND),
+    FAVORITE_ALREADY_EXISTS(5007, "Favorite already exists", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
