@@ -23,6 +23,14 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {"/users",
             "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/swagger-ui/**", "/v3/api-docs/**", "/ai"
     };
+    private final String[] PUBLIC_ENDPOINTS_SWAGGER = {"/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/hiv/v3/api-docs/**",
+            "/hiv/swagger-ui/**",
+            "/hiv/swagger-ui.html",
+            "/swagger-resources/**",
+            "/webjars/**"};
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
@@ -30,8 +38,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated());
+                        request.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                                .requestMatchers(PUBLIC_ENDPOINTS_SWAGGER).permitAll()
+                                .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
