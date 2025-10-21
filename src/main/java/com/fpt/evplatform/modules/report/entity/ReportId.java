@@ -1,4 +1,4 @@
-package com.fpt.evplatform.modules.favorite.entity;
+package com.fpt.evplatform.modules.report.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -9,8 +9,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class FavoriteId implements Serializable {
-    private Integer userId;
+public class ReportId implements Serializable {
+    private Integer reporterId;
     private Integer listingId;
 }
-

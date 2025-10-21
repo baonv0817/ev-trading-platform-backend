@@ -34,6 +34,8 @@ public enum ErrorCode {
     LISTING_NOT_FOUND(5005, "Listing not found", HttpStatus.NOT_FOUND),
     FAVORITE_NOT_FOUND(5006, "Favorite not found", HttpStatus.NOT_FOUND),
     FAVORITE_ALREADY_EXISTS(5007, "Favorite already exists", HttpStatus.BAD_REQUEST),
+    REPORT_ALREADY_EXISTS(5008, "Report already exists", HttpStatus.BAD_REQUEST),
+    REPORT_NOT_FOUND(5009, "Report not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
