@@ -1,6 +1,7 @@
 package com.fpt.evplatform.modules.user.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fpt.evplatform.modules.membership.dto.response.MembershipPlanResponse;
 import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,7 +26,7 @@ public class UserResponse {
     Integer districtCode;
     Integer wardCode;
     String bio;
-    MembershipPlan plan;
+    MembershipPlanResponse plan;
     String planStatus;
     LocalDateTime startAt;
     LocalDateTime endAt;

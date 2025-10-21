@@ -2,7 +2,9 @@ package com.fpt.evplatform.modules.salepost.dto.response;
 
 import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.enums.ProductType;
+import com.fpt.evplatform.modules.batterypost.dto.response.BatteryPostResponse;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
+import com.fpt.evplatform.modules.vehiclepost.dto.response.VehiclePostResponse;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -24,27 +26,9 @@ public class PostResponse {
     private Integer priorityLevel;
     private LocalDateTime createdAt;
 
-    private BatteryPost batteryPost;
-//    private Vehicle vehicle;
+    private BatteryPostResponse batteryPost;
+    private VehiclePostResponse vehiclePost;
 
-//    @Data
-//    public static class Battery {
-//        private Long batteryId;
-//        private String chemistryName;
-//        private Double capacityKwh;
-//        private Integer sohPercent;
-//        private Integer cycleCount;
-//    }
-
-//    @Data
-//    public static class Vehicle {
-//        private Long vehicleId;
-//        private String brand;
-//        private String model;
-//        private Integer year;
-//        private Long mileageKm;
-//        private Integer batteryHealthPct;
-//    }
 }
 
 

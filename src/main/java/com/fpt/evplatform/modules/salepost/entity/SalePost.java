@@ -3,6 +3,7 @@ package com.fpt.evplatform.modules.salepost.entity;
 import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.enums.ProductType;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
+import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -49,13 +50,13 @@ public class SalePost {
 
     LocalDateTime updatedAt;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "battery_id")
     BatteryPost batteryPost;
 
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "vehicle_id", referencedColumnName = "vehicle_id")
-//    private VehiclePost vehiclePost;
+   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   @JoinColumn(name = "vehicle_id")
+   private VehiclePost vehiclePost;
 
     @PrePersist
     void prePersist() {

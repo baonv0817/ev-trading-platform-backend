@@ -15,6 +15,15 @@ spring:
       ddl-auto: update
     properties:
       hibernate.format_sql: true
+  ai:
+    openai:
+      api-key: ${GEMINI_KEY}
+      chat:
+        base-url: https://generativelanguage.googleapis.com
+        completions-path: /v1beta/openai/chat/completions
+        options:
+          model: gemini-2.0-flash
+
 
 jwt:
   signerKey: "3i4yH3g3L3bZxDzrVgOZfXSVwDtvpQfVq4m1F3fQp1W1XHrHVhJ4K0Zb3XnZLq4uB5mEoH6d5qVnXx8yO2T0w=="
@@ -22,6 +31,7 @@ jwt:
 stripe:
   secretKey: "sk_test_51SJ8VSFrqxl0mEi9fNNghT8B3UdNPfKwJ4UaM7Qb2uVWnHF8G9nkwZpb8P5WNeBygK0J4UXYtjQpqy9vhUu5uxxw00CQQuV6B2"
   publishableKey: "pk_test_51SJ8VSFrqxl0mEi9EQVIRo5Y9sdHm7XpJBRv98wiToInqQFlfIzcAmMZmoi5AKkIpajnGp8FmmXCgJYOnuUuedA900KjWvzGns"
+
 
 #logging:
 #  level:

@@ -5,6 +5,8 @@ import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.enums.ProductType;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
+import com.fpt.evplatform.modules.model.entity.Model;
+import com.fpt.evplatform.modules.model.repository.ModelRepository;
 import com.fpt.evplatform.modules.salepost.dto.request.CreatePostRequest;
 import com.fpt.evplatform.modules.salepost.dto.response.PostResponse;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
@@ -12,6 +14,7 @@ import com.fpt.evplatform.modules.salepost.mapper.SalePostMapper;
 import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
+import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class SalePostService {
     SalePostRepository saleRepo;
     UserRepository userRepo;
     SalePostMapper postMapper;
+    ModelRepository modelRepo;
 
     @Transactional
     public PostResponse createPost(String username, CreatePostRequest req) {
@@ -55,10 +59,10 @@ public class SalePostService {
         // 5) Validate detail theo productType
         if (req.getProductType() == ProductType.BATTERY) {
             if (req.getBattery() == null) throw new AppException(ErrorCode.BATTERY_DETAIL_REQUIRED);
-//            if (req.getVehicle() != null) throw new IllegalArgumentException("Vehicle detail must be null for BATTERY");
+          if (req.getVehicle() != null) throw new AppException(ErrorCode.VEHICLE_DETAIL_MUST_BE_NULL);
         } else {
-//            if (req.getVehicle() == null) throw new IllegalArgumentException("Vehicle detail required");
-            if (req.getBattery() != null) throw new AppException(ErrorCode.BATTERY_DETAIL_MUST_BE_NULL);
+           if (req.getVehicle() == null) throw new AppException(ErrorCode.VEHICLE_DETAIL_REQUIRED);
+           if (req.getBattery() != null) throw new AppException(ErrorCode.BATTERY_DETAIL_MUST_BE_NULL);
         }
 
         // 6) Tạo SALE_POST
@@ -86,19 +90,28 @@ public class SalePostService {
                     .build();
             post.setBatteryPost(bp);
         }
-//         else {
-//            var d = req.getVehicle();
-//            VehiclePost vp = VehiclePost.builder()
-//                    .brand(d.getBrand())
-//                    .model(d.getModel())
-//                    .yearOfManufacture(d.getYear())
-//                    .mileageKm(d.getMileageKm())
-//                    .batteryHealthPct(d.getBatteryHealthPct())
-//                    .build();
-//            post.setVehiclePost(vp);
-//        }
+        else {
+           var d = req.getVehicle();
+           Model model = modelRepo.findById(d.getModelId())
+                   .orElseThrow(() -> new AppException(ErrorCode.MODEL_NOT_FOUND));
+           VehiclePost vp = VehiclePost.builder()
+                     .model(model)
+                     .year(d.getYear())
+                     .odoKm(d.getOdoKm())
+                     .vin(d.getVin())
+                     .transmission(d.getTransmission())
+                     .fuelType(d.getFuelType())
+                     .origin(d.getOrigin())
+                     .bodyStyle(d.getBodyStyle())
+                     .seatCount(d.getSeatCount())
+                     .color(d.getColor())
+                     .accessories(d.isAccessories())
+                     .registration(d.isRegistration())
+                     .build();
+            post.setVehiclePost(vp);
+        }
         System.out.println(post);
-        // 8) Lưu tất cả trong 1 transaction (cascade sẽ tạo luôn detail)
+        // 8) Lưu tất cả
         saleRepo.save(post);
         System.out.println(post);
         return postMapper.toPostResponse(post);

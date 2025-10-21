@@ -1,7 +1,7 @@
 package com.fpt.evplatform.modules.salepost.dto.request;
 
 import com.fpt.evplatform.common.enums.ProductType;
-import com.fpt.evplatform.modules.salepost.entity.SalePost;
+import com.fpt.evplatform.modules.model.entity.Model;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class CreatePostRequest {
 
     @Valid
     private BatteryDetail battery;
-//    @Valid private VehicleDetail vehicle;
+   @Valid private VehicleDetail vehicle;
 
     @Data
     public static class BatteryDetail {
@@ -34,12 +34,19 @@ public class CreatePostRequest {
         @NotNull @Min(0) private Integer cycleCount;
     }
 
-//    @Data
-//    public static class VehicleDetail {
-//        private String brand;
-//        private String model;
-//        @NotNull @Min(1900) private Integer year;
-//        @NotNull @Min(0) private Long mileageKm;
-//        @NotNull @Min(0) @Max(100) private Integer batteryHealthPct;
-//    }
+    @Data
+    public static class VehicleDetail {
+        private Integer modelId;
+        private Integer year;
+        private Integer odoKm;
+        private String vin;
+        private String transmission;
+        private String fuelType;
+        private String origin;
+        private String bodyStyle;
+        private Integer seatCount;
+        private String color;
+        private boolean accessories;
+        private boolean registration;
+    }
 }
