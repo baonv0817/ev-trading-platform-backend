@@ -48,8 +48,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
     )
     Page<PostCardProjection> findCards(Pageable pageable);
 
-    // Detail: load luôn media + seller để tránh N+1
-    @EntityGraph(attributePaths = {"mediaList", "seller"})
+    @EntityGraph(attributePaths = {"seller", "mediaList", "batteryPost", "vehiclePost"})
     Optional<SalePost> findByListingId(Integer listingId);
 
     Integer countBySeller_UserIdAndCreatedAtBetween(Integer sellerId, LocalDateTime start, LocalDateTime end);

@@ -8,6 +8,7 @@ import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
 import com.fpt.evplatform.modules.model.entity.Model;
 import com.fpt.evplatform.modules.model.repository.ModelRepository;
 import com.fpt.evplatform.modules.salepost.dto.request.CreatePostRequest;
+import com.fpt.evplatform.modules.salepost.dto.request.UpdatePostRequest;
 import com.fpt.evplatform.modules.salepost.dto.response.PostResponse;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
 import com.fpt.evplatform.modules.salepost.mapper.SalePostMapper;
@@ -20,7 +21,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class SalePostService {
     UserRepository userRepo;
     SalePostMapper postMapper;
     ModelRepository modelRepo;
+    SalePostQueryService salePostQueryService;
 
     @Transactional
     public PostResponse createPost(String username, CreatePostRequest req) {
@@ -115,6 +119,87 @@ public class SalePostService {
         saleRepo.save(post);
         System.out.println(post);
         return postMapper.toPostResponse(post);
-
     }
+
+    @Transactional
+    public PostResponse update(Integer listingId, UpdatePostRequest req) {
+        SalePost sp = saleRepo.findById(listingId)
+                .orElseThrow(() -> new NoSuchElementException("SalePost not found"));
+
+        // ===== Scalars =====
+        if (req.getTitle() != null) {
+            String t = req.getTitle().trim();
+            if (t.isEmpty()) throw new IllegalArgumentException("Title cannot be empty");
+            if (t.length() > 255) throw new IllegalArgumentException("Title too long (max 255)");
+            sp.setTitle(t);
+        }
+        if (req.getDescription() != null) sp.setDescription(req.getDescription());
+        if (req.getAskPrice() != null) {
+            BigDecimal price = req.getAskPrice();
+            if (price.compareTo(BigDecimal.ZERO) < 0) throw new IllegalArgumentException("askPrice must be >= 0");
+            sp.setAskPrice(price);
+        }
+        if (req.getProvinceCode() != null) sp.setProvinceCode(req.getProvinceCode());
+        if (req.getDistrictCode() != null) sp.setDistrictCode(req.getDistrictCode());
+        if (req.getWardCode() != null)     sp.setWardCode(req.getWardCode());
+        if (req.getStreet() != null)       sp.setStreet(req.getStreet());
+        if (req.getPriorityLevel() != null) sp.setPriorityLevel(req.getPriorityLevel());
+        if (req.getStatus() != null)        sp.setStatus(req.getStatus());
+
+        if (sp.getProductType() == ProductType.BATTERY) {
+            applyBatteryDetail(sp, req);
+        } else if (sp.getProductType() == ProductType.VEHICLE) {
+            applyVehicleDetail(sp, req);
+        }
+
+        saleRepo.save(sp);
+        return postMapper.toPostResponse(sp);
+    }
+
+    private void applyBatteryDetail(SalePost sp, UpdatePostRequest req) {
+        var detail = req.getBattery();
+        if (detail == null) return;
+
+        BatteryPost bp = sp.getBatteryPost();
+        if (bp == null) bp = new BatteryPost();
+
+        bp.setChemistryName(detail.getChemistryName());
+        bp.setCapacityKwh(detail.getCapacityKwh());
+        bp.setSohPercent(detail.getSohPercent());
+        bp.setCycleCount(detail.getCycleCount());
+
+        sp.setBatteryPost(bp);
+    }
+
+    private void applyVehicleDetail(SalePost sp, UpdatePostRequest req) {
+        var detail = req.getVehicle();
+        if (detail == null) return;
+
+        VehiclePost vp = sp.getVehiclePost();
+        if (vp == null) vp = new VehiclePost();
+
+        vp.setYear(detail.getYear());
+        vp.setOdoKm(detail.getOdoKm());
+        vp.setVin(detail.getVin());
+        vp.setTransmission(detail.getTransmission());
+        vp.setFuelType(detail.getFuelType());
+        vp.setOrigin(detail.getOrigin());
+        vp.setBodyStyle(detail.getBodyStyle());
+        vp.setSeatCount(detail.getSeatCount());
+        vp.setColor(detail.getColor());
+        vp.setAccessories(detail.isAccessories());
+        vp.setRegistration(detail.isRegistration());
+
+        sp.setVehiclePost(vp);
+    }
+
+    @Transactional
+    public void delete(Integer listingId) {
+        SalePost sp = saleRepo.findById(listingId)
+                .orElseThrow(() -> new NoSuchElementException("SalePost not found"));
+
+        sp.setStatus(PostStatus.HIDDEN);
+        saleRepo.save(sp);
+    }
+
 }

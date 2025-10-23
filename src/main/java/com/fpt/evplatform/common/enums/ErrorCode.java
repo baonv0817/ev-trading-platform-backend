@@ -35,6 +35,7 @@ public enum ErrorCode {
     FAVORITE_NOT_FOUND(5006, "Favorite not found", HttpStatus.NOT_FOUND),
     FAVORITE_ALREADY_EXISTS(5007, "Favorite already exists", HttpStatus.BAD_REQUEST),
     REPORT_ALREADY_EXISTS(5008, "Report already exists", HttpStatus.BAD_REQUEST),
+    BAD_REQUEST(7000,"Test", HttpStatus.BAD_REQUEST),
     REPORT_NOT_FOUND(5009, "Report not found", HttpStatus.NOT_FOUND),
     ;
 

@@ -3,6 +3,8 @@ package com.fpt.evplatform.modules.salepost.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
+import com.fpt.evplatform.modules.batterypost.dto.response.BatteryPostResponse;
+import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
 import com.fpt.evplatform.modules.media.dto.response.MediaResponse;
 import com.fpt.evplatform.modules.media.entity.Media;
 import com.fpt.evplatform.modules.salepost.dto.response.PostCard;
@@ -10,6 +12,8 @@ import com.fpt.evplatform.modules.salepost.dto.response.PostResponse;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
 import com.fpt.evplatform.modules.salepost.repository.PostCardProjection;
 import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
+import com.fpt.evplatform.modules.vehiclepost.dto.response.VehiclePostResponse;
+import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +93,15 @@ public class SalePostQueryService {
         dto.setPriorityLevel(sp.getPriorityLevel());
         dto.setCreatedAt(sp.getCreatedAt());
 
+        // ==== map nested battery / vehicle ====
+        if (sp.getBatteryPost() != null) {
+            dto.setBatteryPost(toBatteryDto(sp.getBatteryPost()));
+        }
+        if (sp.getVehiclePost() != null) {
+            dto.setVehiclePost(toVehicleDto(sp.getVehiclePost()));
+        }
+
+
         if (sp.getMediaList() != null) {
             dto.setMedia(sp.getMediaList().stream()
                     .map(this::toMediaDto)
@@ -126,5 +139,35 @@ public class SalePostQueryService {
                 .generate(publicId));
 
         return mr;
+    }
+
+    private BatteryPostResponse toBatteryDto(BatteryPost bp) {
+        BatteryPostResponse dto = new BatteryPostResponse();
+        // điền các field bạn có trong BatteryPostResponse
+        dto.setChemistryName(bp.getChemistryName());
+        dto.setCapacityKwh(bp.getCapacityKwh());
+        dto.setSohPercent(bp.getSohPercent());
+        dto.setCycleCount(bp.getCycleCount());
+        // thêm id nếu DTO có
+        // dto.setBatteryId(bp.getBatteryId());
+        return dto;
+    }
+
+    private VehiclePostResponse toVehicleDto(VehiclePost vp) {
+        VehiclePostResponse dto = new VehiclePostResponse();
+        dto.setModelName(vp.getModel().getName());
+        dto.setBrandName(vp.getModel().getBrand().getName());
+        dto.setYear(vp.getYear());
+        dto.setOdoKm(vp.getOdoKm());
+        dto.setVin(vp.getVin());
+        dto.setTransmission(vp.getTransmission());
+        dto.setFuelType(vp.getFuelType());
+        dto.setOrigin(vp.getOrigin());
+        dto.setBodyStyle(vp.getBodyStyle());
+        dto.setSeatCount(vp.getSeatCount());
+        dto.setColor(vp.getColor());
+        dto.setAccessories(vp.isAccessories());
+        dto.setRegistration(vp.isRegistration());
+        return dto;
     }
 }

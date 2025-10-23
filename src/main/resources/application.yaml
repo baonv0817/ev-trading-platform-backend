@@ -34,6 +34,8 @@ jwt:
 
 stripe:
   secretKey: ${STRIPE_SECRET_KEY}
+  success-url: http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}
+  cancel-url: http://localhost:3000/checkout/cancel
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}

@@ -29,7 +29,7 @@ public class StripePaymentService {
         User user = userRepo.findByUsername(username).orElseThrow();
         MembershipPlan plan = planRepo.findById(planId).orElseThrow();
 
-        long amount = plan.getPrice().longValueExact(); // VND zero-decimal
+        long amount = plan.getPrice().longValueExact();
 
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                 .setAmount(amount)
