@@ -5,6 +5,8 @@ import com.fpt.evplatform.common.enums.ReportStatus;
 import com.fpt.evplatform.modules.report.dto.request.ReportRequest;
 import com.fpt.evplatform.modules.report.dto.response.ReportResponse;
 import com.fpt.evplatform.modules.report.service.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,9 +19,11 @@ import java.util.List;
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Reports", description = "Endpoints for users and admin to manage reports")
 public class ReportController {
     ReportService reportService;
 
+    @Operation(summary = "Create a report", description = "User send a report")
     @PostMapping
     public ApiResponse<ReportResponse> createReport(@RequestBody ReportRequest req) {
         return ApiResponse.<ReportResponse>builder()
