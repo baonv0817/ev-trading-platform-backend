@@ -3,7 +3,6 @@ package com.fpt.evplatform.modules.salepost.dto.response;
 import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.enums.ProductType;
 import com.fpt.evplatform.modules.batterypost.dto.response.BatteryPostResponse;
-import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
 import com.fpt.evplatform.modules.media.dto.response.MediaResponse;
 import com.fpt.evplatform.modules.vehiclepost.dto.response.VehiclePostResponse;
 import lombok.Data;

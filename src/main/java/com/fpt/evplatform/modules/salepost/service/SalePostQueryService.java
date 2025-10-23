@@ -45,9 +45,9 @@ public class SalePostQueryService {
         // Ghép address nhanh (nếu có LocationService thì map code -> tên)
         StringBuilder addr = new StringBuilder();
         if (p.getStreet() != null && !p.getStreet().isBlank()) addr.append(p.getStreet());
-        if (p.getWardCode() != null)     addr.append(addr.length()>0?", ":"").append("W.").append(p.getWardCode());
-        if (p.getDistrictCode() != null) addr.append(addr.length()>0?", ":"").append("D.").append(p.getDistrictCode());
-        if (p.getProvinceCode() != null) addr.append(addr.length()>0?", ":"").append("P.").append(p.getProvinceCode());
+        if (p.getWardCode() != null)     addr.append(addr.length()>0?", ":"").append("Xã.").append(p.getWardCode());
+        if (p.getDistrictCode() != null) addr.append(addr.length()>0?", ":"").append("Huyện.").append(p.getDistrictCode());
+        if (p.getProvinceCode() != null) addr.append(addr.length()>0?", ":"").append("Tỉnh.").append(p.getProvinceCode());
         card.setAddress(addr.toString());
 
         // cover thumb (nếu có media)
