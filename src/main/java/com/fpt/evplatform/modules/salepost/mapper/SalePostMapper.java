@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface SalePostMapper {
 
-    @Mapping(source = "seller.userId", target ="sellerId")
+    @Mapping(source = "seller.username", target ="seller")
     PostResponse toPostResponse(SalePost salePost);
 
     BatteryPostResponse toBatteryPostResponse(BatteryPost batteryPost);

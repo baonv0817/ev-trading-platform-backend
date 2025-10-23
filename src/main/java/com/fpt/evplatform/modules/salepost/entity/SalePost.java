@@ -3,6 +3,7 @@ package com.fpt.evplatform.modules.salepost.entity;
 import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.enums.ProductType;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
+import com.fpt.evplatform.modules.media.entity.Media;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
 import jakarta.persistence.*;
@@ -11,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sale_posts")
@@ -33,6 +36,8 @@ public class SalePost {
     ProductType productType;
 
     String description;
+
+    String title;
 
     BigDecimal askPrice;
 
@@ -60,6 +65,11 @@ public class SalePost {
    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    @JoinColumn(name = "vehicle_id")
    VehiclePost vehiclePost;
+
+    @OneToMany(mappedBy = "salePost", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    @Builder.Default
+    List<Media> mediaList = new ArrayList<>();
 
     @PrePersist
     void prePersist() {

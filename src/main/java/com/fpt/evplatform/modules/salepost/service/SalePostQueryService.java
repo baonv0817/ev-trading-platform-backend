@@ -76,12 +76,12 @@ public class SalePostQueryService {
 
         PostResponse dto = new PostResponse();
         dto.setListingId(sp.getListingId());
-        dto.setSeller(sp.getSeller() != null ? sp.getSeller().getUsername() : null);
+        dto.setSeller(sp.getSeller().getUsername());
         dto.setProductType(sp.getProductType() != null ? sp.getProductType() : null);
         dto.setTitle(sp.getTitle());
         dto.setDescription(sp.getDescription());
         dto.setAskPrice(sp.getAskPrice());
-        dto.setStatus(sp.getStatus() != null ? sp.getStatus() : null);
+        dto.setStatus(sp.getStatus() != null ? sp.getStatus(): null);
         dto.setProvinceCode(sp.getProvinceCode());
         dto.setDistrictCode(sp.getDistrictCode());
         dto.setWardCode(sp.getWardCode());
