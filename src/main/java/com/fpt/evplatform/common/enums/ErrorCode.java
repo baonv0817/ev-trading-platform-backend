@@ -37,6 +37,8 @@ public enum ErrorCode {
     REPORT_ALREADY_EXISTS(5008, "Report already exists", HttpStatus.BAD_REQUEST),
     BAD_REQUEST(7000,"Test", HttpStatus.BAD_REQUEST),
     REPORT_NOT_FOUND(5009, "Report not found", HttpStatus.NOT_FOUND),
+    OFFER_ALREADY_EXISTS(6001, "Offer already exists", HttpStatus.BAD_REQUEST ),
+    OFFER_NOT_FOUND(6002, "Offer not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
