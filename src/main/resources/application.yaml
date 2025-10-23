@@ -23,14 +23,27 @@ spring:
         completions-path: /v1beta/openai/chat/completions
         options:
           model: gemini-2.0-flash
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 120MB
 
 
 jwt:
-  signerKey: "3i4yH3g3L3bZxDzrVgOZfXSVwDtvpQfVq4m1F3fQp1W1XHrHVhJ4K0Zb3XnZLq4uB5mEoH6d5qVnXx8yO2T0w=="
+  signerKey: ${SIGNER_KEY}
 
 stripe:
-  secretKey: "sk_test_51SJ8VSFrqxl0mEi9fNNghT8B3UdNPfKwJ4UaM7Qb2uVWnHF8G9nkwZpb8P5WNeBygK0J4UXYtjQpqy9vhUu5uxxw00CQQuV6B2"
-  publishableKey: "pk_test_51SJ8VSFrqxl0mEi9EQVIRo5Y9sdHm7XpJBRv98wiToInqQFlfIzcAmMZmoi5AKkIpajnGp8FmmXCgJYOnuUuedA900KjWvzGns"
+  secretKey: ${STRIPE_SECRET_KEY}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+  upload-folder-root: sale-posts
+  max-images-per-post: 10
+  max-videos-per-post: 1
+  max-file-size-mb: 10
+
 
 
 #logging:

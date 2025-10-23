@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
-    Integer countBySellerIdAndCreatedAtBetween(Integer sellerId, LocalDateTime start, LocalDateTime end);
+    Integer countBySeller_UserIdAndCreatedAtBetween(Integer sellerId, LocalDateTime start, LocalDateTime end);
 }

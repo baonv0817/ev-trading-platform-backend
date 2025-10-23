@@ -3,6 +3,7 @@ package com.fpt.evplatform.modules.salepost.entity;
 import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.enums.ProductType;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
+import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,9 @@ public class SalePost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer listingId;
 
-    Integer sellerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
+    User seller;
 
     @Enumerated(EnumType.STRING)
     ProductType productType;
@@ -56,7 +59,7 @@ public class SalePost {
 
    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    @JoinColumn(name = "vehicle_id")
-   private VehiclePost vehiclePost;
+   VehiclePost vehiclePost;
 
     @PrePersist
     void prePersist() {

@@ -44,7 +44,7 @@ public class SalePostService {
         }
 
         // 3) Check quota bài đăng trong kỳ [start_at, end_at]
-        Integer used = saleRepo.countBySellerIdAndCreatedAtBetween(
+        Integer used = saleRepo.countBySeller_UserIdAndCreatedAtBetween(
                 user.getUserId(), user.getStartAt(), user.getEndAt()
         );
         Integer maxPosts = user.getPlan().getMaxPosts();
@@ -67,7 +67,7 @@ public class SalePostService {
 
         // 6) Tạo SALE_POST
         SalePost post = SalePost.builder()
-                .sellerId(user.getUserId())
+                .seller(user)
                 .productType(req.getProductType())
                 .description(req.getDescription())
                 .askPrice(req.getAskPrice())
