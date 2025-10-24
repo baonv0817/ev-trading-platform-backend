@@ -1,6 +1,7 @@
 package com.fpt.evplatform.modules.offer.service;
 
 import com.fpt.evplatform.common.enums.ErrorCode;
+import com.fpt.evplatform.common.enums.OfferStatus;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.offer.dto.request.OfferRequest;
 import com.fpt.evplatform.modules.offer.dto.response.OfferResponse;
@@ -63,7 +64,12 @@ public class OfferService {
     public OfferResponse updateOfferStatus(Integer offerId, String status) {
         Offer offer = offerRepository.findById(offerId)
                 .orElseThrow(() -> new AppException(ErrorCode.OFFER_NOT_FOUND));
-        offer.setStatus(status);
+        try {
+            OfferStatus newStatus = OfferStatus.valueOf(status.toUpperCase());
+            offer.setStatus(newStatus);
+        } catch (IllegalArgumentException e) {
+            throw new AppException(ErrorCode.INVALID_STATUS);
+        }
         offerRepository.save(offer);
         return offerMapper.toResponse(offer);
     }

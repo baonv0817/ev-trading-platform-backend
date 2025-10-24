@@ -31,10 +31,8 @@ public class Offer {
 
     Double proposedPrice;
 
-//    @Enumerated(EnumType.STRING)
-//    OfferStatus status;
-
-    String status;
+    @Enumerated(EnumType.STRING)
+    OfferStatus status;
 
     LocalDateTime createdAt;
     LocalDateTime expiresAt;

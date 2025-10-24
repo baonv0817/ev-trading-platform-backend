@@ -39,6 +39,10 @@ public enum ErrorCode {
     REPORT_NOT_FOUND(5009, "Report not found", HttpStatus.NOT_FOUND),
     OFFER_ALREADY_EXISTS(6001, "Offer already exists", HttpStatus.BAD_REQUEST ),
     OFFER_NOT_FOUND(6002, "Offer not found", HttpStatus.NOT_FOUND),
+    INVALID_STATUS(6003, "Status invalid", HttpStatus.BAD_REQUEST),
+    PLATFORM_SITE_NOT_FOUND(6004, "Platform site not found" , HttpStatus.NOT_FOUND),
+    DEAL_ALREADY_EXISTS(6005, "Deal already exists", HttpStatus.BAD_REQUEST),
+    DEAL_NOT_FOUND(6006, "Deal not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

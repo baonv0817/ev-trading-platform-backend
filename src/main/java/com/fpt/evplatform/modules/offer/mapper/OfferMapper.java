@@ -15,12 +15,14 @@ public interface OfferMapper {
     @Mapping(target = "buyer", source = "buyer")
     @Mapping(target = "listing", source = "listing")
     @Mapping(target = "proposedPrice", source = "req.proposedPrice")
-    @Mapping(target = "status", constant = "PENDING")
+    @Mapping(target = "status", expression = "java(com.fpt.evplatform.common.enums.OfferStatus.PENDING)")
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "expiresAt", ignore = true)
     Offer toEntity(OfferRequest req, User buyer, SalePost listing);
 
     @Mapping(target = "buyerId", source = "buyer.userId")
     @Mapping(target = "buyerName", expression = "java(offer.getBuyer().getUsername())")
     @Mapping(target = "listingId", source = "listing.listingId")
+    @Mapping(target = "status", source = "status")
     OfferResponse toResponse(Offer offer);
 }

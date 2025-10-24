@@ -1,6 +1,6 @@
 package com.fpt.evplatform.common.enums;
 
-public enum OfferStatus {
+public enum DealStatus {
     PENDING,
     REJECTED,
     APPROVED,
