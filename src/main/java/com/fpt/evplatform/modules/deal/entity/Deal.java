@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,7 +26,7 @@ public class Deal {
     @JoinColumn(name = "offer_id")
     Offer offer;
 
-    Double balanceDue;
+    BigDecimal balanceDue;
 
     @Enumerated(EnumType.STRING)
     DealStatus status;
@@ -42,6 +43,7 @@ public class Deal {
     protected void onCreate() {
         if (status == null) status = DealStatus.PENDING;
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate

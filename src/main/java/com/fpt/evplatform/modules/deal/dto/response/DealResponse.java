@@ -15,8 +15,9 @@ public class DealResponse {
     Integer dealId;
     Integer offerId;
     Integer platformSiteId;
+    String platformSiteName;
     Double balanceDue;
-    DealStatus status;
+    String status;
     LocalDateTime scheduledAt;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

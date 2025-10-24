@@ -8,7 +8,7 @@ import com.fpt.evplatform.modules.offer.entity.Offer;
 import com.fpt.evplatform.modules.platformsite.entity.PlatformSite;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface DealMapper {
 
     @Mapping(target = "dealId", ignore = true)
@@ -23,5 +23,7 @@ public interface DealMapper {
 
     @Mapping(target = "offerId", source = "offer.offerId")
     @Mapping(target = "platformSiteId", source = "platformSite.platformSiteId")
+    @Mapping(target = "platformSiteName", source = "platformSite.name")
+    @Mapping(target = "status", expression = "java(deal.getStatus().name())")
     DealResponse toResponse(Deal deal);
 }

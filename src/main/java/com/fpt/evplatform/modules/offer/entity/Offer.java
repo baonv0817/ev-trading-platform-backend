@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,7 +30,7 @@ public class Offer {
     @JoinColumn(name = "buyer_id")
     User buyer;
 
-    Double proposedPrice;
+    BigDecimal proposedPrice;
 
     @Enumerated(EnumType.STRING)
     OfferStatus status;

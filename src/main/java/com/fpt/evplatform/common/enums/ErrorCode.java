@@ -43,6 +43,9 @@ public enum ErrorCode {
     PLATFORM_SITE_NOT_FOUND(6004, "Platform site not found" , HttpStatus.NOT_FOUND),
     DEAL_ALREADY_EXISTS(6005, "Deal already exists", HttpStatus.BAD_REQUEST),
     DEAL_NOT_FOUND(6006, "Deal not found", HttpStatus.NOT_FOUND),
+    ESCROW_NOT_FOUND(6007, "Escrow not found", HttpStatus.NOT_FOUND),
+    ESCROW_ALREADY_RELEASED(6008, "Escrow is already released", HttpStatus.BAD_REQUEST),
+    ESCROW_ALREADY_EXISTS(6009, "Escrow already exists", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

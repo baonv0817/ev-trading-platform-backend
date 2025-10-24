@@ -25,7 +25,7 @@ public class DealController {
 
     DealService dealService;
 
-    @Operation(summary = "Create new deal from accepted offer")
+    @Operation(summary = "Create new deal after offer accepted")
     @PostMapping
     public ApiResponse<DealResponse> createDeal(@RequestBody DealRequest req) {
         return ApiResponse.<DealResponse>builder()
@@ -34,7 +34,26 @@ public class DealController {
                 .build();
     }
 
-    @Operation(summary = "Get all deals (admin)")
+    @Operation(summary = "Assign a platform site and schedule a deal")
+    @PutMapping("/{dealId}/assign-site")
+    public ApiResponse<DealResponse> assignSite(@PathVariable Integer dealId, @RequestBody DealRequest req) {
+        return ApiResponse.<DealResponse>builder()
+                .result(dealService.assignPlatformSite(dealId, req))
+                .message("Platform site assigned successfully")
+                .build();
+    }
+
+    @Operation(summary = "Mark a deal as completed (observer/admin)")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/{dealId}/complete")
+    public ApiResponse<DealResponse> completeDeal(@PathVariable Integer dealId) {
+        return ApiResponse.<DealResponse>builder()
+                .result(dealService.completeDeal(dealId))
+                .message("Deal marked as completed")
+                .build();
+    }
+
+    @Operation(summary = "(ADMIN) Get all deals or filter by status")
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ApiResponse<List<DealResponse>> getAllDeals(
@@ -47,7 +66,7 @@ public class DealController {
                 .build();
     }
 
-    @Operation(summary = "Update deal status (admin or seller)")
+    @Operation(summary = "Update deal status manually")
     @PutMapping("/{dealId}/status")
     public ApiResponse<DealResponse> updateStatus(
             @PathVariable Integer dealId,
@@ -58,7 +77,7 @@ public class DealController {
                 .build();
     }
 
-    @Operation(summary = "Delete deal (admin)")
+    @Operation(summary = "Delete a deal (ADMIN)")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{dealId}")
     public ApiResponse<Void> deleteDeal(@PathVariable Integer dealId) {

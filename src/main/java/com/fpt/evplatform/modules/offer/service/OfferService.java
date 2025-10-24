@@ -1,8 +1,12 @@
 package com.fpt.evplatform.modules.offer.service;
 
+import com.fpt.evplatform.common.enums.DealStatus;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.common.enums.OfferStatus;
 import com.fpt.evplatform.common.exception.AppException;
+import com.fpt.evplatform.modules.deal.dto.request.DealRequest;
+import com.fpt.evplatform.modules.deal.dto.response.DealResponse;
+import com.fpt.evplatform.modules.deal.service.DealService;
 import com.fpt.evplatform.modules.offer.dto.request.OfferRequest;
 import com.fpt.evplatform.modules.offer.dto.response.OfferResponse;
 import com.fpt.evplatform.modules.offer.entity.Offer;
@@ -17,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +35,7 @@ public class OfferService {
     UserRepository userRepository;
     SalePostRepository salePostRepository;
     OfferMapper offerMapper;
+    DealService dealService;
 
     public OfferResponse createOffer(OfferRequest req) {
         User buyer = userRepository.findById(req.getBuyerId())
@@ -42,6 +48,7 @@ public class OfferService {
 
         Offer offer = offerMapper.toEntity(req, buyer, listing);
         offerRepository.save(offer);
+
         return offerMapper.toResponse(offer);
     }
 
@@ -61,16 +68,47 @@ public class OfferService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public OfferResponse updateOfferStatus(Integer offerId, String status) {
         Offer offer = offerRepository.findById(offerId)
                 .orElseThrow(() -> new AppException(ErrorCode.OFFER_NOT_FOUND));
+
+        OfferStatus newStatus;
         try {
-            OfferStatus newStatus = OfferStatus.valueOf(status.toUpperCase());
-            offer.setStatus(newStatus);
+            newStatus = OfferStatus.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new AppException(ErrorCode.INVALID_STATUS);
         }
-        offerRepository.save(offer);
+
+        if (newStatus == OfferStatus.ACCEPTED) {
+            List<Offer> existingAccepted = offerRepository.findByListing(offer.getListing()).stream()
+                    .filter(o -> o.getStatus() == OfferStatus.ACCEPTED)
+                    .toList();
+            if (!existingAccepted.isEmpty()) {
+                throw new AppException(ErrorCode.DEAL_ALREADY_EXISTS);
+            }
+
+            offerRepository.findByListing(offer.getListing()).forEach(o -> {
+                if (!o.getOfferId().equals(offer.getOfferId()) &&
+                        o.getStatus() == OfferStatus.PENDING) {
+                    o.setStatus(OfferStatus.REJECTED);
+                    offerRepository.save(o);
+                }
+            });
+
+            offer.setStatus(OfferStatus.ACCEPTED);
+            offerRepository.save(offer);
+
+            DealRequest dealReq = new DealRequest();
+            dealReq.setOfferId(offerId);
+            DealResponse dealResponse = dealService.createDeal(dealReq);
+
+            log.info("Deal created for accepted offer ID {} -> deal ID {}", offerId, dealResponse.getDealId());
+        } else {
+            offer.setStatus(newStatus);
+            offerRepository.save(offer);
+        }
+
         return offerMapper.toResponse(offer);
     }
 
@@ -80,5 +118,4 @@ public class OfferService {
         }
         offerRepository.deleteById(offerId);
     }
-
 }

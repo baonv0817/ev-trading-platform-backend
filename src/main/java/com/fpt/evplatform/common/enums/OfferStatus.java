@@ -3,6 +3,6 @@ package com.fpt.evplatform.common.enums;
 public enum OfferStatus {
     PENDING,
     REJECTED,
-    APPROVED,
+    ACCEPTED,
     EXPIRED,
 }

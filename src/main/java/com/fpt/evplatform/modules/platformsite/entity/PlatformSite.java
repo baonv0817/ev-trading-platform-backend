@@ -21,6 +21,6 @@ public class PlatformSite {
     int districtCode;
     int wardCode;
     String street;
-    boolean active;
+    Boolean active;
 
 }
