@@ -26,7 +26,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {"/users",
-            "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/swagger-ui/**", "/v3/api-docs/**", "/ai"
+            "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/ai","/plans"
     };
     private final String[] PUBLIC_ENDPOINTS_SWAGGER = {"/v3/api-docs/**",
             "/swagger-ui/**",
@@ -50,7 +50,7 @@ public class SecurityConfig {
                         // cho preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // cho POST vào các public endpoints
-                        .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         // cho swagger
                         .requestMatchers(PUBLIC_ENDPOINTS_SWAGGER).permitAll()
                         .anyRequest().authenticated()

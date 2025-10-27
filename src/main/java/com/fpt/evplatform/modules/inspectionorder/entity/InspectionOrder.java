@@ -29,9 +29,9 @@ public class InspectionOrder {
     SalePost salePost;
 
     LocalDateTime scheduledAt;
-    Integer province_code;
-    Integer district_code;
-    Integer ward_code;
+    Integer provinceCode;
+    Integer districtCode;
+    Integer wardCode;
     String street;
 
     @Enumerated(EnumType.STRING)
@@ -39,6 +39,7 @@ public class InspectionOrder {
 
     LocalDateTime createdAt;
     BigDecimal amount;
+    LocalDateTime paidAt;
 
     @Enumerated(EnumType.STRING)
     PaymentStatus paymentStatus;
