@@ -5,6 +5,9 @@ import com.fpt.evplatform.modules.model.dto.request.ModelRequest;
 import com.fpt.evplatform.modules.model.dto.response.ModelResponse;
 import com.fpt.evplatform.modules.model.entity.Model;
 import com.fpt.evplatform.modules.model.service.ModelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,9 +23,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Model (ADMIN)", description = "CRUD operations for models")
 public class ModelController {
     ModelService modelService;
 
+    @Operation(summary = "List all Models")
     @GetMapping
     public ApiResponse<List<ModelResponse>> findAll() {
         return ApiResponse.<List<ModelResponse>>builder()
@@ -31,6 +37,7 @@ public class ModelController {
                 .build();
     }
 
+    @Operation(summary = "Find Model by ID")
     @GetMapping("/{id}")
     public ApiResponse<ModelResponse> findById(@PathVariable Integer id) {
         return ApiResponse.<ModelResponse>builder()
@@ -39,6 +46,7 @@ public class ModelController {
                 .build();
     }
 
+    @Operation(summary = "Find Models by Brand")
     @GetMapping("/brand/{brandId}")
     public ApiResponse<List<ModelResponse>> findByBrand(@PathVariable Integer brandId) {
         return ApiResponse.<List<ModelResponse>>builder()
@@ -47,6 +55,7 @@ public class ModelController {
                 .build();
     }
 
+    @Operation(summary = "Create a new Model")
     @PostMapping
     public ApiResponse<ModelResponse> createModel(@RequestBody ModelRequest request) {
         return ApiResponse.<ModelResponse>builder()
@@ -55,6 +64,7 @@ public class ModelController {
                 .build();
     }
 
+    @Operation(summary = "Update a Model")
     @PutMapping("/{id}")
     public ApiResponse<ModelResponse> updateModel(@PathVariable Integer id, @RequestBody ModelRequest request) {
         return ApiResponse.<ModelResponse>builder()
@@ -63,6 +73,7 @@ public class ModelController {
                 .build();
     }
 
+    @Operation(summary = "Delete a Model")
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteModel(@PathVariable Integer id) {
         modelService.deleteModel(id);
