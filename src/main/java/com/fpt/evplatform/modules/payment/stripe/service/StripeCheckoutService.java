@@ -30,10 +30,10 @@ public class StripeCheckoutService {
     @Value("${stripe.cancel-url}")
     private String cancelUrl;
 
-    public Map<String, Object> createCheckoutSession(String username, Integer planId) throws StripeException {
+    public Map<String, Object> createCheckoutSession(String username, String planName) throws StripeException {
         User user = userRepo.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        MembershipPlan plan = planRepo.findById(planId)
+        MembershipPlan plan = planRepo.findByName(planName)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
 

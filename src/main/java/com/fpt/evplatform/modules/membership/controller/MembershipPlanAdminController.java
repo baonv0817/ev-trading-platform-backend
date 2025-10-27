@@ -5,6 +5,7 @@ import com.fpt.evplatform.modules.membership.service.MembershipPlanService;
 import com.fpt.evplatform.modules.membership.dto.request.MembershipPlanCreationRequest;
 import com.fpt.evplatform.modules.membership.dto.request.MembershipPlanUpdateRequest;
 import com.fpt.evplatform.modules.membership.dto.response.MembershipPlanResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('ADMIN')")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@SecurityRequirement(name = "bearerAuth")
 public class MembershipPlanAdminController {
     MembershipPlanService membershipPlanService;
 

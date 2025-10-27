@@ -44,14 +44,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(c -> {}) // BẬT CORS trong Security
+                .cors(c -> {})
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        // cho preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // cho POST vào các public endpoints
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        // cho swagger
                         .requestMatchers(PUBLIC_ENDPOINTS_SWAGGER).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -71,14 +68,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
 
-        // Nếu KHÔNG dùng cookie/withCredentials:
         cfg.setAllowCredentials(false);
-        // chỉ định origin FE (an toàn hơn), có thể để pattern:
         cfg.setAllowedOriginPatterns(List.of("http://localhost:5173"));
-
-        // Nếu bạn thực sự dùng withCredentials=true ở Axios:
-        // cfg.setAllowCredentials(true);
-        // cfg.setAllowedOrigins(List.of("http://localhost:5173")); // KHÔNG được dùng "*"
 
         cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("Content-Type","Authorization","Accept","Origin","X-Requested-With"));
