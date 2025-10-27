@@ -4,6 +4,9 @@ import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
 import com.fpt.evplatform.modules.membership.repository.MembershipPlanRepository;
+import com.fpt.evplatform.modules.salepost.dto.response.PostResponse;
+import com.fpt.evplatform.modules.salepost.mapper.SalePostMapper;
+import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.dto.request.UserCreationRequest;
 import com.fpt.evplatform.modules.user.dto.request.UserUpdateRequest;
 import com.fpt.evplatform.modules.user.dto.response.UserResponse;
@@ -28,6 +31,8 @@ import java.util.List;
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
+    SalePostRepository salePostRepository;
+    SalePostMapper salePostMapper;
     PasswordEncoder passwordEncoder;
     MembershipPlanRepository membershipPlanRepository;
 
@@ -78,10 +83,13 @@ public class UserService {
 
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(Integer id){
-        log.info("In method get user by Id");
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
+
+//    public List<PostResponse> getMyPosts(){
+//        return salePostMapper.toPostResponse(salePostRepository.findBySellerId())
+//    }
 
 
 }

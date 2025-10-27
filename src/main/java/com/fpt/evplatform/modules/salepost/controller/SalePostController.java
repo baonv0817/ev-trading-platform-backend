@@ -13,9 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sale-posts")
@@ -24,15 +28,22 @@ import org.springframework.web.bind.annotation.*;
 public class SalePostController {
 
     private final SalePostService service;
-
     private final SalePostQueryService salePostQueryService;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
 
-    @PostMapping()
-    ApiResponse<PostResponse> create(@AuthenticationPrincipal(expression = "subject") String username, @Valid @RequestBody CreatePostRequest req) {
-        return ApiResponse.<PostResponse>builder()
-                .result(service.createPost(username, req))
-                .build();
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ApiResponse<PostResponse> create(@AuthenticationPrincipal(expression = "subject") String username, @RequestPart("payload") @Valid String payload,
+                                     @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        try {
+            CreatePostRequest req = objectMapper.readValue(payload, CreatePostRequest.class);
+            return ApiResponse.<PostResponse>builder()
+                    .result(service.createPost(username, req, files))
+                    .build();
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @GetMapping

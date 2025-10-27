@@ -5,6 +5,7 @@ import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.enums.ProductType;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
+import com.fpt.evplatform.modules.media.service.MediaService;
 import com.fpt.evplatform.modules.model.entity.Model;
 import com.fpt.evplatform.modules.model.repository.ModelRepository;
 import com.fpt.evplatform.modules.salepost.dto.request.CreatePostRequest;
@@ -16,13 +17,16 @@ import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
 import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -33,10 +37,11 @@ public class SalePostService {
     UserRepository userRepo;
     SalePostMapper postMapper;
     ModelRepository modelRepo;
+    MediaService mediaService;
     SalePostQueryService salePostQueryService;
 
     @Transactional
-    public PostResponse createPost(String username, CreatePostRequest req) {
+    public PostResponse createPost(String username, CreatePostRequest req, @Nullable List<MultipartFile> files) {
         User user = userRepo.findByUsername(username).orElseThrow();
 
         if (user.getPlan().getName().equalsIgnoreCase("FREE")) throw new AppException(ErrorCode.SALE_POST_MEMBERSHIP_REQUIRED);
@@ -73,6 +78,7 @@ public class SalePostService {
         SalePost post = SalePost.builder()
                 .seller(user)
                 .productType(req.getProductType())
+                .title(req.getTitle())
                 .description(req.getDescription())
                 .askPrice(req.getAskPrice())
                 .provinceCode(req.getProvinceCode())
@@ -114,11 +120,13 @@ public class SalePostService {
                      .build();
             post.setVehiclePost(vp);
         }
-        System.out.println(post);
         // 8) Lưu tất cả
         saleRepo.save(post);
-        System.out.println(post);
-        return postMapper.toPostResponse(post);
+        Integer listingId = post.getListingId();
+        if (files != null && !files.isEmpty()) {
+            mediaService.upload(listingId, files);
+        }
+        return salePostQueryService.getDetail(listingId);
     }
 
     @Transactional

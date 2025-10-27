@@ -1,6 +1,7 @@
 package com.fpt.evplatform.modules.user.entity;
 
 import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
+import com.fpt.evplatform.modules.salepost.entity.SalePost;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -41,6 +42,10 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     MembershipPlan plan;
+
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn
+//    SalePost post;
     String planStatus;
     String role;
     LocalDateTime startAt;

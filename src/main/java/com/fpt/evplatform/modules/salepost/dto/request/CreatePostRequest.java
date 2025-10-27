@@ -13,7 +13,7 @@ public class CreatePostRequest {
 
     @NotNull
     private ProductType productType;
-
+    private String title;
     @NotNull private BigDecimal askPrice;
     @NotNull private Integer provinceCode;
     private Integer districtCode;
