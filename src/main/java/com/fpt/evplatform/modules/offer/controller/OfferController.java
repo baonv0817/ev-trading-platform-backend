@@ -4,6 +4,7 @@ import com.fpt.evplatform.common.dto.ApiResponse;
 import com.fpt.evplatform.modules.offer.dto.request.OfferRequest;
 import com.fpt.evplatform.modules.offer.dto.response.OfferResponse;
 import com.fpt.evplatform.modules.offer.service.OfferService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Offers", description = "Manage offers between buyers and sellers")
+@SecurityRequirement(name = "bearerAuth")
 public class OfferController {
 
     OfferService offerService;
