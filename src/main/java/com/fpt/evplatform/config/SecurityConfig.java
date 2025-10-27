@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -75,7 +74,7 @@ public class SecurityConfig {
         // Nếu KHÔNG dùng cookie/withCredentials:
         cfg.setAllowCredentials(false);
         // chỉ định origin FE (an toàn hơn), có thể để pattern:
-        cfg.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        cfg.setAllowedOriginPatterns(List.of("http://localhost:5173"));
 
         // Nếu bạn thực sự dùng withCredentials=true ở Axios:
         // cfg.setAllowCredentials(true);
