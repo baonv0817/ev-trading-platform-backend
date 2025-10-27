@@ -4,6 +4,7 @@ import com.fpt.evplatform.modules.inspectionorder.dto.request.CreateOrderRequest
 import com.fpt.evplatform.modules.inspectionorder.dto.request.FinishInspectionRequest;
 import com.fpt.evplatform.modules.inspectionorder.dto.response.CreateCheckoutResponse;
 import com.fpt.evplatform.modules.inspectionorder.service.InspectionOrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/inspection-orders")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class InspectionOrderController {
 
     private final InspectionOrderService orderService;

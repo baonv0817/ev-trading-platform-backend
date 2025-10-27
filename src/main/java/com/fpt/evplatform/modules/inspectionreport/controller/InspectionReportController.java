@@ -6,6 +6,7 @@ import com.fpt.evplatform.modules.inspectionreport.dto.request.CreateReportReque
 import com.fpt.evplatform.modules.inspectionreport.dto.request.ReviewReportRequest;
 import com.fpt.evplatform.modules.inspectionreport.dto.response.InspectionReportResponse;
 import com.fpt.evplatform.modules.inspectionreport.service.InspectionReportService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/inspection-reports")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class InspectionReportController {
 
     private final InspectionReportService reportService;

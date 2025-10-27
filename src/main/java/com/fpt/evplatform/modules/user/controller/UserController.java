@@ -6,6 +6,7 @@ import com.fpt.evplatform.modules.user.service.UserService;
 import com.fpt.evplatform.modules.user.dto.request.UserCreationRequest;
 import com.fpt.evplatform.modules.user.dto.request.UserUpdateRequest;
 import com.fpt.evplatform.modules.user.dto.response.UserResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
     UserService userService;
 

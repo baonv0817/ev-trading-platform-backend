@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class CreateCheckoutRequest {
     @NotNull
-    private Integer planId;
+    private String planName;
 }

@@ -3,6 +3,7 @@ package com.fpt.evplatform.modules.media.controller;
 
 import com.fpt.evplatform.modules.media.dto.response.MediaResponse;
 import com.fpt.evplatform.modules.media.service.MediaService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/sale-posts/{listingId}/media")
+@SecurityRequirement(name = "bearerAuth")
 public class MediaController {
 
     private final MediaService mediaService;

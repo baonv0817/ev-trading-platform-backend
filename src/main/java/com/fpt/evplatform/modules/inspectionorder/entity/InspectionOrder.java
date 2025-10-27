@@ -21,7 +21,6 @@ public class InspectionOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id")
     Integer orderId;
 
     @ManyToOne(fetch = FetchType.LAZY)

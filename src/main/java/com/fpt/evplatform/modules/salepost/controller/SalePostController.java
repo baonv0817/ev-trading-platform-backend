@@ -7,6 +7,7 @@ import com.fpt.evplatform.modules.salepost.dto.response.PostCard;
 import com.fpt.evplatform.modules.salepost.dto.response.PostResponse;
 import com.fpt.evplatform.modules.salepost.service.SalePostQueryService;
 import com.fpt.evplatform.modules.salepost.service.SalePostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/sale-posts")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class SalePostController {
 
     private final SalePostService service;

@@ -8,6 +8,7 @@ import com.fpt.evplatform.modules.payment.stripe.dto.CreateCheckoutRequest;
 import com.fpt.evplatform.modules.payment.stripe.service.PlanActivationFromSessionService;
 import com.fpt.evplatform.modules.payment.stripe.service.StripeCheckoutService;
 import com.fpt.evplatform.modules.user.dto.response.UserPlanResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users/me/plan/checkout")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class StripeCheckoutController {
 
     private final StripeCheckoutService checkoutService;
@@ -28,7 +30,7 @@ public class StripeCheckoutController {
             @AuthenticationPrincipal(expression = "subject") String username,
             @Valid @RequestBody CreateCheckoutRequest req) throws Exception {
 
-        var result = checkoutService.createCheckoutSession(username, req.getPlanId());
+        var result = checkoutService.createCheckoutSession(username, req.getPlanName());
         return ApiResponse.<Map<String, Object>>builder()
                 .result(result)
                 .message("Checkout Session created")
