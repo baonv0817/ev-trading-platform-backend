@@ -4,6 +4,7 @@ import com.fpt.evplatform.common.dto.ApiResponse;
 import com.fpt.evplatform.modules.offer.dto.request.OfferRequest;
 import com.fpt.evplatform.modules.offer.dto.response.OfferResponse;
 import com.fpt.evplatform.modules.offer.service.OfferService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
@@ -23,6 +24,7 @@ public class OfferController {
 
     OfferService offerService;
 
+    @Operation(summary = "Create a new Offer")
     @PostMapping
     public ApiResponse<OfferResponse> createOffer(@RequestBody OfferRequest req) {
         return ApiResponse.<OfferResponse>builder()
@@ -31,6 +33,7 @@ public class OfferController {
                 .build();
     }
 
+    @Operation(summary = "Get list of offers from a User (buyer)")
     @GetMapping("/buyer/{buyerId}")
     public ApiResponse<List<OfferResponse>> getOffersByBuyer(@PathVariable Integer buyerId) {
         return ApiResponse.<List<OfferResponse>>builder()
@@ -38,6 +41,7 @@ public class OfferController {
                 .build();
     }
 
+    @Operation(summary = "Get list of offers for a Listing")
     @GetMapping("/listing/{listingId}")
     public ApiResponse<List<OfferResponse>> getOffersByListing(@PathVariable Integer listingId) {
         return ApiResponse.<List<OfferResponse>>builder()
@@ -45,6 +49,7 @@ public class OfferController {
                 .build();
     }
 
+    @Operation(summary = "View status of an Offer")
     @PutMapping("/{offerId}/status")
     public ApiResponse<OfferResponse> updateOfferStatus(
             @PathVariable Integer offerId,
@@ -55,6 +60,7 @@ public class OfferController {
                 .build();
     }
 
+    @Operation(summary = "Delete an Offer")
     @DeleteMapping("/{offerId}")
     public ApiResponse<Void> deleteOffer(@PathVariable Integer offerId) {
         offerService.deleteOffer(offerId);

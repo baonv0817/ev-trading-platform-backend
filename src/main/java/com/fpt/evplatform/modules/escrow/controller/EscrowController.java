@@ -4,6 +4,7 @@ import com.fpt.evplatform.common.dto.ApiResponse;
 import com.fpt.evplatform.modules.escrow.dto.response.EscrowResponse;
 import com.fpt.evplatform.modules.escrow.service.EscrowService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Escrows", description = "Manage deal escrow payments")
+@SecurityRequirement(name = "bearerAuth")
 public class EscrowController {
 
     EscrowService escrowService;
