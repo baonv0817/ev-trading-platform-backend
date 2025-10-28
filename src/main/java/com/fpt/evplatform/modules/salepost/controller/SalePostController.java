@@ -7,12 +7,12 @@ import com.fpt.evplatform.modules.salepost.dto.response.PostCard;
 import com.fpt.evplatform.modules.salepost.dto.response.PostResponse;
 import com.fpt.evplatform.modules.salepost.service.SalePostQueryService;
 import com.fpt.evplatform.modules.salepost.service.SalePostService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,11 +46,13 @@ public class SalePostController {
 
     }
 
+    @Operation(security = {})
     @GetMapping
     public Page<PostCard> list(Pageable pageable) {
         return salePostQueryService.listCards(pageable);
     }
 
+    @Operation(security = {})
     // Detail: trả full media[]
     @GetMapping("/{listingId}")
     public PostResponse getDetail(@PathVariable Integer listingId) {
