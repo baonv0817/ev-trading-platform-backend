@@ -19,12 +19,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/models")
-@PreAuthorize("hasAuthority('ADMIN')")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Model (ADMIN)", description = "CRUD operations for models")
+@Tag(name = "Model", description = "CRUD operations for models")
 public class ModelController {
     ModelService modelService;
 
@@ -55,7 +54,8 @@ public class ModelController {
                 .build();
     }
 
-    @Operation(summary = "Create a new Model")
+    @Operation(summary = "(ADMIN) Create a new Model")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ApiResponse<ModelResponse> createModel(@RequestBody ModelRequest request) {
         return ApiResponse.<ModelResponse>builder()
@@ -64,7 +64,8 @@ public class ModelController {
                 .build();
     }
 
-    @Operation(summary = "Update a Model")
+    @Operation(summary = "(ADMIN) Update a Model")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
     public ApiResponse<ModelResponse> updateModel(@PathVariable Integer id, @RequestBody ModelRequest request) {
         return ApiResponse.<ModelResponse>builder()
@@ -73,7 +74,8 @@ public class ModelController {
                 .build();
     }
 
-    @Operation(summary = "Delete a Model")
+    @Operation(summary = "(ADMIN) Delete a Model")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteModel(@PathVariable Integer id) {
         modelService.deleteModel(id);

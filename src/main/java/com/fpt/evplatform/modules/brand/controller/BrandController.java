@@ -19,11 +19,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/brands")
-@PreAuthorize("hasAuthority('ADMIN')")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@Tag(name = "Brand (ADMIN)", description = "CRUD operations for brand (ADMIN)")
+@Tag(name = "Brand", description = "CRUD operations for brand")
 @SecurityRequirement(name = "bearerAuth")
 public class BrandController {
     BrandService brandService;
@@ -46,8 +45,9 @@ public class BrandController {
                 .build();
     }
 
-    @Operation(summary = "Add a new Brand")
+    @Operation(summary = "(ADMIN) Add a new Brand")
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ApiResponse<BrandResponse> createBrand(@RequestBody BrandRequest request) {
         return ApiResponse.<BrandResponse>builder()
                 .result(brandService.createBrand(request))
@@ -55,8 +55,9 @@ public class BrandController {
                 .build();
     }
 
-    @Operation(summary = "Update a Brand")
+    @Operation(summary = "(ADMIN) Update a Brand")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ApiResponse<BrandResponse> updateBrand(@PathVariable Integer id, @RequestBody BrandRequest request) {
         return ApiResponse.<BrandResponse>builder()
                 .result(brandService.updateBrand(id, request))
@@ -64,8 +65,9 @@ public class BrandController {
                 .build();
     }
 
-    @Operation(summary = "Delete a Brand")
+    @Operation(summary = "(ADMIN) Delete a Brand")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ApiResponse<Void> deleteBrandById(@PathVariable Integer id) {
         brandService.deleteBrandById(id);
         return ApiResponse.<Void>builder()
