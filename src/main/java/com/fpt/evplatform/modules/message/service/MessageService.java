@@ -3,6 +3,7 @@ package com.fpt.evplatform.modules.message.service;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.message.dto.request.MessageRequest;
+import com.fpt.evplatform.modules.message.dto.response.ConversationResponse;
 import com.fpt.evplatform.modules.message.dto.response.MessageResponse;
 import com.fpt.evplatform.modules.message.entity.Message;
 import com.fpt.evplatform.modules.message.mapper.MessageMapper;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -53,5 +56,39 @@ public class MessageService {
                 .stream()
                 .map(messageMapper::toMessageResponse)
                 .toList();
+    }
+
+//    public List<MessageResponse> getConversations(Integer userId) {
+//        List<String> keys = messageRepository.findDistinctConversationKeysByUserId(userId);
+//        return keys.stream()
+//                .map(messageRepository::findTop1ByConversationKeyOrderBySentAtDesc)
+//                .filter(m -> !m.isEmpty())
+//                .map(m -> messageMapper.toMessageResponse(m.getFirst()))
+//                .collect(Collectors.toList());
+//    }
+
+    public List<ConversationResponse> getConversations(Integer userId) {
+        List<String> keys = messageRepository.findDistinctConversationKeysByUserId(userId);
+        User currentUser = userRepository.findById(userId).orElseThrow();
+
+        return keys.stream()
+                .map(k -> {
+                    Message latest = messageRepository.findTopByConversationKeyOrderBySentAtDesc(k);
+                    if (latest == null) return null;
+
+                    User partner = latest.getSender().getUserId().equals(userId)
+                            ? latest.getReceiver()
+                            : latest.getSender();
+
+                    return ConversationResponse.builder()
+                            .partnerId(partner.getUserId())
+                            .partnerName(partner.getUsername())
+                            .lastMessage(latest.getBody())
+                            .lastMessageSenderName(latest.getSender().getUsername())
+                            .sentAt(latest.getSentAt().toString())
+                            .build();
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

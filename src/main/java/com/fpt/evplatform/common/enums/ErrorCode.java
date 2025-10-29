@@ -46,6 +46,10 @@ public enum ErrorCode {
     ESCROW_NOT_FOUND(6007, "Escrow not found", HttpStatus.NOT_FOUND),
     ESCROW_ALREADY_RELEASED(6008, "Escrow is already released", HttpStatus.BAD_REQUEST),
     ESCROW_ALREADY_EXISTS(6009, "Escrow already exists", HttpStatus.BAD_REQUEST),
+    REVIEW_ALREADY_EXISTED(6010, "Review already exists", HttpStatus.BAD_REQUEST ),
+    REVIEW_NOT_FOUND(6011, "Review not found", HttpStatus.NOT_FOUND),
+    SENDER_NOT_FOUND(6012, "Sender not found", HttpStatus.NOT_FOUND),
+    RECEIVER_NOT_FOUND(6013, "Receiver not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
