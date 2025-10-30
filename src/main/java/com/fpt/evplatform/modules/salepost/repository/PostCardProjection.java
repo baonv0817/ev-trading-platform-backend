@@ -8,6 +8,7 @@ public interface PostCardProjection {
     BigDecimal getAskPrice();
     String  getProductType();
     Integer getProvinceCode();
+    Integer getPriorityLevel();
     Integer getDistrictCode();
     Integer getWardCode();
     String  getStreet();

@@ -9,6 +9,7 @@ public class PostCard {
     private String  productName;   // từ sp.title
     private BigDecimal askPrice;
     private String  productType;
+    private Integer priorityLevel;
 
     private Integer provinceCode;
     private Integer districtCode;

@@ -38,6 +38,15 @@ public class SalePostQueryService {
         return salePostRepository.findCardsByUsername(username, pageable).map(this::toCard);
     }
 
+    public Page<PostCard> getVehiclePosts(Pageable pageable) {
+        return salePostRepository.findVehiclePosts(pageable).map(this::toCard);
+    }
+
+    public Page<PostCard> getBatteryPosts(Pageable pageable) {
+        return salePostRepository.findBatteryPosts(pageable).map(this::toCard);
+    }
+
+
 
     private PostCard toCard(PostCardProjection p) {
         PostCard card = new PostCard();
@@ -50,6 +59,7 @@ public class SalePostQueryService {
         card.setDistrictCode(p.getDistrictCode());
         card.setWardCode(p.getWardCode());
         card.setStreet(p.getStreet());
+        card.setPriorityLevel(p.getPriorityLevel());
 
         // Ghép address nhanh (nếu có LocationService thì map code -> tên)
         StringBuilder addr = new StringBuilder();

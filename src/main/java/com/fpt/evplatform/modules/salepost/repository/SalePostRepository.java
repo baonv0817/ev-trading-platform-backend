@@ -24,6 +24,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
       sp.district_code     AS districtCode,
       sp.ward_code         AS wardCode,
       sp.street            AS street,
+      sp.priority_level AS priorityLevel,
       (
         SELECT m.public_id FROM media m
         WHERE m.listing_id = sp.listing_id
@@ -64,6 +65,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
       sp.district_code     AS districtCode,
       sp.ward_code         AS wardCode,
       sp.street            AS street,
+      sp.priority_level AS priorityLevel,
       (
         SELECT m.public_id FROM media m
         WHERE m.listing_id = sp.listing_id
@@ -91,6 +93,90 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
     )
     Page<PostCardProjection> findCardsByUsername(@org.springframework.data.repository.query.Param("username") String username, Pageable pageable);
 
+    @Query(
+            value = """
+    SELECT
+      sp.listing_id        AS listingId,
+      sp.title             AS productName,
+      sp.ask_price         AS askPrice,
+      sp.product_type      AS productType,
+      sp.province_code     AS provinceCode,
+      sp.district_code     AS districtCode,
+      sp.ward_code         AS wardCode,
+      sp.street            AS street,
+    sp.priority_level AS priorityLevel,
+      (
+        SELECT m.public_id FROM media m
+        WHERE m.listing_id = sp.listing_id
+        ORDER BY m.sort_order ASC
+        LIMIT 1
+      ) AS coverPublicId,
+      (
+        SELECT m.type FROM media m
+        WHERE m.listing_id = sp.listing_id
+        ORDER BY m.sort_order ASC
+        LIMIT 1
+      ) AS coverType
+    FROM sale_posts sp
+    WHERE sp.status = 'ACTIVE'
+      AND sp.product_type = 'VEHICLE'
+    ORDER BY
+      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+      sp.priority_level DESC,
+      sp.created_at DESC
+    """,
+            countQuery = """
+    SELECT COUNT(*)
+    FROM sale_posts sp
+    WHERE sp.status = 'ACTIVE'
+      AND sp.product_type = 'VEHICLE'
+    """,
+            nativeQuery = true
+    )
+    Page<PostCardProjection> findVehiclePosts(Pageable pageable);
+
+
+    @Query(
+            value = """
+    SELECT
+      sp.listing_id        AS listingId,
+      sp.title             AS productName,
+      sp.ask_price         AS askPrice,
+      sp.product_type      AS productType,
+      sp.province_code     AS provinceCode,
+      sp.district_code     AS districtCode,
+      sp.ward_code         AS wardCode,
+      sp.street            AS street,
+      sp.priority_level AS priorityLevel,
+      (
+        SELECT m.public_id FROM media m
+        WHERE m.listing_id = sp.listing_id
+        ORDER BY m.sort_order ASC
+        LIMIT 1
+      ) AS coverPublicId,
+      (
+        SELECT m.type FROM media m
+        WHERE m.listing_id = sp.listing_id
+        ORDER BY m.sort_order ASC
+        LIMIT 1
+      ) AS coverType
+    FROM sale_posts sp
+    WHERE sp.status = 'ACTIVE'
+      AND sp.product_type = 'BATTERY'
+    ORDER BY
+      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+      sp.priority_level DESC,
+      sp.created_at DESC
+    """,
+            countQuery = """
+    SELECT COUNT(*)
+    FROM sale_posts sp
+    WHERE sp.status = 'ACTIVE'
+      AND sp.product_type = 'BATTERY'
+    """,
+            nativeQuery = true
+    )
+    Page<PostCardProjection> findBatteryPosts(Pageable pageable);
 
     @EntityGraph(attributePaths = {"seller", "mediaList", "batteryPost", "vehiclePost"})
     Optional<SalePost> findByListingId(Integer listingId);
