@@ -34,6 +34,11 @@ public class SalePostQueryService {
         return salePostRepository.findCards(pageable).map(this::toCard);
     }
 
+    public Page<PostCard> getMyPosts(String username, Pageable pageable) {
+        return salePostRepository.findCardsByUsername(username, pageable).map(this::toCard);
+    }
+
+
     private PostCard toCard(PostCardProjection p) {
         PostCard card = new PostCard();
         card.setListingId(p.getListingId());

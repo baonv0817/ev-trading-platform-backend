@@ -31,7 +31,7 @@ public class PostResponse {
     private BatteryPostResponse batteryPost;
     private VehiclePostResponse vehiclePost;
 
-    private List<MediaResponse> media; // full gallery
+    private List<MediaResponse> media;
 
 }
 

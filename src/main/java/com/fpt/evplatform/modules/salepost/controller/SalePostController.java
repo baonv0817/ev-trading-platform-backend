@@ -46,6 +46,12 @@ public class SalePostController {
 
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public Page<PostCard> getMyPosts(@AuthenticationPrincipal(expression = "subject") String username, Pageable pageable) {
+        return salePostQueryService.getMyPosts(username, pageable);
+    }
+
     @Operation(security = {})
     @GetMapping
     public Page<PostCard> list(Pageable pageable) {
