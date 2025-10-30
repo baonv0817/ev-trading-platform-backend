@@ -2,6 +2,7 @@ package com.fpt.evplatform.modules.message.controller;
 
 import com.fpt.evplatform.common.dto.ApiResponse;
 import com.fpt.evplatform.modules.message.dto.request.MessageRequest;
+import com.fpt.evplatform.modules.message.dto.response.ConversationResponse;
 import com.fpt.evplatform.modules.message.dto.response.MessageResponse;
 import com.fpt.evplatform.modules.message.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,4 +53,14 @@ public class MessageController {
                 .message("User messages retrieved successfully")
                 .build();
     }
+
+    @Operation(summary = "Get list of Message history of User")
+    @GetMapping("/conversations/{userId}")
+    public ApiResponse<List<ConversationResponse>> getConversations(@PathVariable Integer userId) {
+        return ApiResponse.<List<ConversationResponse>>builder()
+                .result(messageService.getConversations(userId))
+                .message("Conversation list retrieved successfully")
+                .build();
+    }
+
 }

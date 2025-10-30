@@ -4,10 +4,11 @@ import com.fpt.evplatform.modules.message.dto.request.MessageRequest;
 import com.fpt.evplatform.modules.message.dto.response.MessageResponse;
 import com.fpt.evplatform.modules.message.entity.Message;
 import com.fpt.evplatform.modules.user.entity.User;
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface MessageMapper {
 
     @Mapping(target = "messageId", ignore = true)
