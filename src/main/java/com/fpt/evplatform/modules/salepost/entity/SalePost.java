@@ -7,6 +7,7 @@ import com.fpt.evplatform.modules.media.entity.Media;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -39,6 +40,7 @@ public class SalePost {
 
     String title;
 
+    @Min(value = 1)
     BigDecimal askPrice;
 
     @Enumerated(EnumType.STRING)

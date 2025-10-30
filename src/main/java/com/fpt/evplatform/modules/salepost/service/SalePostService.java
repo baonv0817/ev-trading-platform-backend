@@ -74,6 +74,10 @@ public class SalePostService {
            if (req.getBattery() != null) throw new AppException(ErrorCode.BATTERY_DETAIL_MUST_BE_NULL);
         }
 
+        if(req.getAskPrice().intValue() <= 0) {
+            throw new AppException(ErrorCode.ASK_PRICE_MUST_POSITIVE);
+        }
+
         // 6) Tạo SALE_POST
         SalePost post = SalePost.builder()
                 .seller(user)
