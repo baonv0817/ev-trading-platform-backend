@@ -58,6 +58,16 @@ public class SalePostController {
         return salePostQueryService.listCards(pageable);
     }
 
+    @GetMapping("/vehicles")
+    public Page<PostCard> getVehiclePosts(Pageable pageable) {
+        return salePostQueryService.getVehiclePosts(pageable);
+    }
+
+    @GetMapping("/batteries")
+    public Page<PostCard> getBatteryPosts(Pageable pageable) {
+        return salePostQueryService.getBatteryPosts(pageable);
+    }
+
     @Operation(security = {})
     // Detail: trả full media[]
     @GetMapping("/{listingId}")
