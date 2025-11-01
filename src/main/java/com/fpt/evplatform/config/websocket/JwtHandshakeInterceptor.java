@@ -7,13 +7,13 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.net.URI;
 import java.util.Map;
 
 @Slf4j
@@ -26,30 +26,30 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInt
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        response.getHeaders().add("Access-Control-Allow-Origin", "http://localhost:5173");
-        response.getHeaders().add("Access-Control-Allow-Credentials", "true");
-        response.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        response.getHeaders().add("Access-Control-Allow-Headers", "Authorization, Content-Type");
+        URI uri = request.getURI();
+        String path = uri.getPath();
 
-        String path = request.getURI().getPath();
-
-        if (path.endsWith("/info")) {
+        if (path.contains("/info") || path.contains("/xhr") || path.contains("/websocket")) {
             return true;
         }
 
-        String token = getTokenFromQuery(request.getURI().getQuery());
-        if (token == null) {
-            log.warn("No token found in WebSocket connection request");
+        String token = getTokenFromQuery(uri.getQuery());
+        if (token == null || token.isBlank()) {
+            log.warn("No token found in WebSocket connection request to {}", path);
             return false;
         }
 
         try {
             Jwt jwt = jwtDecoder.decode(token);
+
             attributes.put("jwt", jwt);
-            log.info("WebSocket connected for user: {}", jwt.getSubject());
+            request.getAttributes();
+            request.getAttributes().put("jwt", jwt);
+
+            log.info("✅ WebSocket connected for user: {}", jwt.getSubject());
             return true;
         } catch (Exception e) {
-            log.error("Invalid JWT: {}", e.getMessage());
+            log.error("❌ Invalid JWT: {}", e.getMessage());
             return false;
         }
     }
