@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS_SWAGGER).permitAll()
+                        .requestMatchers("/ws-chat/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/sale-posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/sale-posts").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
