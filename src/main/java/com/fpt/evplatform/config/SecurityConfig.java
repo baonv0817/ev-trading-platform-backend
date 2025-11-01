@@ -26,7 +26,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {"/users",
-            "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/ai","/plans"
+            "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/ai","/plans",
+            "/brands/**",
+            "/models/**"
     };
     private final String[] PUBLIC_ENDPOINTS_SWAGGER = {"/v3/api-docs/**",
             "/swagger-ui/**",
@@ -52,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(PUBLIC_ENDPOINTS_SWAGGER).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/sale-posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/sale-posts").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
