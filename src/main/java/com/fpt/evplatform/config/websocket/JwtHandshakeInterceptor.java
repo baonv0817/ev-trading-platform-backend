@@ -26,11 +26,23 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInt
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
+        response.getHeaders().add("Access-Control-Allow-Origin", "http://localhost:5173");
+        response.getHeaders().add("Access-Control-Allow-Credentials", "true");
+        response.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.getHeaders().add("Access-Control-Allow-Headers", "Authorization, Content-Type");
+
+        String path = request.getURI().getPath();
+
+        if (path.endsWith("/info")) {
+            return true;
+        }
+
         String token = getTokenFromQuery(request.getURI().getQuery());
         if (token == null) {
             log.warn("No token found in WebSocket connection request");
             return false;
         }
+
         try {
             Jwt jwt = jwtDecoder.decode(token);
             attributes.put("jwt", jwt);
@@ -41,6 +53,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInt
             return false;
         }
     }
+
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
