@@ -5,13 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.net.URI;
 import java.util.Map;
@@ -19,13 +16,14 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInterceptor {
+public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     private final CustomJwtDecoder jwtDecoder;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
+
         URI uri = request.getURI();
         String path = uri.getPath();
 
@@ -41,19 +39,14 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInt
 
         try {
             Jwt jwt = jwtDecoder.decode(token);
-
             attributes.put("jwt", jwt);
-            request.getAttributes();
-            request.getAttributes().put("jwt", jwt);
-
-            log.info("✅ WebSocket connected for user: {}", jwt.getSubject());
+            log.info("✅ WebSocket handshake connected for user: {}", jwt.getSubject());
             return true;
         } catch (Exception e) {
             log.error("❌ Invalid JWT: {}", e.getMessage());
             return false;
         }
     }
-
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
@@ -68,10 +61,5 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInt
             }
         }
         return null;
-    }
-
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        return message;
     }
 }
