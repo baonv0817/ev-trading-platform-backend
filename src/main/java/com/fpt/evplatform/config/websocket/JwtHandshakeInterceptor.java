@@ -32,7 +32,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         log.info("   • Query: {}", query);
 
         // ✅ Only skip internal SockJS handshake probes (NOT the real WebSocket)
-        if (path.endsWith("/info") || path.contains("/xhr")) {
+        if (path.contains("/info") || path.contains("/xhr")) {
             log.debug("ℹ️ Allowing internal SockJS handshake path: {}", path);
             return true;
         }
