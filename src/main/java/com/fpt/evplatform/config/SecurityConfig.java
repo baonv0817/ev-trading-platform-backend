@@ -26,7 +26,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {"/users",
-            "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/ai","/plans", "brands", "models"
+            "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh", "/ai","/plans"
     };
     private final String[] PUBLIC_ENDPOINTS_SWAGGER = {"/v3/api-docs/**",
             "/swagger-ui/**",
@@ -50,7 +50,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS_SWAGGER).permitAll()
-                        .requestMatchers("/ws-chat/**", "/evplatform/ws-chat/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/sale-posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/sale-posts").permitAll()
                         .anyRequest().authenticated()
@@ -71,11 +70,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
 
-        cfg.setAllowCredentials(true);
+        cfg.setAllowCredentials(false);
         cfg.setAllowedOriginPatterns(List.of("http://localhost:5173"));
 
         cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-        cfg.setAllowedHeaders(List.of("Content-Type","Authorization","Accept","Origin","X-Requested-With", "token"));
+        cfg.setAllowedHeaders(List.of("Content-Type","Authorization","Accept","Origin","X-Requested-With"));
         cfg.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

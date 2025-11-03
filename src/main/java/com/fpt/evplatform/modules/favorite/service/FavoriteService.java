@@ -8,6 +8,7 @@ import com.fpt.evplatform.modules.favorite.entity.Favorite;
 import com.fpt.evplatform.modules.favorite.entity.FavoriteId;
 import com.fpt.evplatform.modules.favorite.mapper.FavoriteMapper;
 import com.fpt.evplatform.modules.favorite.repository.FavoriteRepository;
+import com.fpt.evplatform.modules.salepost.dto.response.PostCard;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
 import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.entity.User;
@@ -16,6 +17,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,14 +59,10 @@ public class FavoriteService {
         favoriteRepository.delete(favorite);
     }
 
-    public List<FavoriteResponse> getUserFavorites(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        return favoriteRepository.findByUser(user)
-                .stream()
-                .map(favoriteMapper::toFavoriteResponse)
-                .toList();
+    public Page<PostCard> getUserFavorites(Integer userId,  Pageable pageable) {
+        return salePostRepository.findFavoriteCardsByUserId(userId, pageable).map(this::toCard);
+
     }
 
     public boolean isFavorited(Integer userId, Integer listingId) {

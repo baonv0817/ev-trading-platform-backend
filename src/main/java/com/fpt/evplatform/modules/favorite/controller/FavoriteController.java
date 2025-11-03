@@ -4,6 +4,7 @@ import com.fpt.evplatform.common.dto.ApiResponse;
 import com.fpt.evplatform.modules.favorite.dto.request.FavoriteRequest;
 import com.fpt.evplatform.modules.favorite.dto.response.FavoriteResponse;
 import com.fpt.evplatform.modules.favorite.service.FavoriteService;
+import com.fpt.evplatform.modules.salepost.dto.response.PostCard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,9 +48,9 @@ public class FavoriteController {
 
     @Operation(summary = "Get a User's favorite list")
     @GetMapping("/user/{userId}")
-    public ApiResponse<List<FavoriteResponse>> getUserFavorites(@PathVariable Integer userId) {
-        return ApiResponse.<List<FavoriteResponse>>builder()
-                .result(favoriteService.getUserFavorites(userId))
+    public ApiResponse<Page<PostCard>> getUserFavorites(@PathVariable Integer userId, Pageable pageable) {
+        return ApiResponse.<Page<PostCard>>builder()
+                .result(favoriteService.getUserFavorites(userId, pageable))
                 .message("User favorites retrieved successfully")
                 .build();
     }
