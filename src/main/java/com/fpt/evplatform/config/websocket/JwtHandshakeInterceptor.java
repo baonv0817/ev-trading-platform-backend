@@ -5,39 +5,55 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.net.URI;
 import java.util.Map;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInterceptor {
+public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     private final CustomJwtDecoder jwtDecoder;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        String token = getTokenFromQuery(request.getURI().getQuery());
-        if (token == null) {
-            log.warn("No token found in WebSocket connection request");
+        URI uri = request.getURI();
+        String path = uri.getPath();
+        String query = uri.getQuery();
+
+        log.info("🌐 Incoming WebSocket handshake request:");
+        log.info("   • Path: {}", path);
+        log.info("   • Query: {}", query);
+
+        // ✅ Only skip internal SockJS handshake probes (NOT the real WebSocket)
+        if (path.contains("/info") || path.contains("/xhr")) {
+            log.debug("ℹ️ Allowing internal SockJS handshake path: {}", path);
+            return true;
+        }
+
+        String token = getTokenFromQuery(query);
+        if (token == null || token.isBlank()) {
+            log.warn("⚠️ No JWT token found in WebSocket request to {}", path);
             return false;
         }
+
         try {
             Jwt jwt = jwtDecoder.decode(token);
+            String username = jwt.getSubject();
+
             attributes.put("jwt", jwt);
-            log.info("WebSocket connected for user: {}", jwt.getSubject());
+            attributes.put("user", username);
+
+            log.info("✅ WebSocket handshake authenticated for user: {}", username);
             return true;
         } catch (Exception e) {
-            log.error("Invalid JWT: {}", e.getMessage());
+            log.error("❌ Invalid JWT in WebSocket handshake: {}", e.getMessage());
             return false;
         }
     }
@@ -45,6 +61,11 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInt
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                WebSocketHandler wsHandler, Exception exception) {
+        if (exception != null) {
+            log.error("💥 Exception during WebSocket handshake: {}", exception.getMessage());
+        } else {
+            log.debug("🤝 Handshake completed successfully for {}", request.getURI());
+        }
     }
 
     private String getTokenFromQuery(String query) {
@@ -55,10 +76,5 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor, ChannelInt
             }
         }
         return null;
-    }
-
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        return message;
     }
 }
