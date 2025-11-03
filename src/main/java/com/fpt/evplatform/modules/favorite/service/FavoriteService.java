@@ -1,5 +1,7 @@
 package com.fpt.evplatform.modules.favorite.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.favorite.dto.request.FavoriteRequest;
@@ -10,6 +12,7 @@ import com.fpt.evplatform.modules.favorite.mapper.FavoriteMapper;
 import com.fpt.evplatform.modules.favorite.repository.FavoriteRepository;
 import com.fpt.evplatform.modules.salepost.dto.response.PostCard;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
+import com.fpt.evplatform.modules.salepost.repository.PostCardProjection;
 import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
@@ -32,6 +35,7 @@ public class FavoriteService {
     UserRepository userRepository;
     SalePostRepository salePostRepository;
     FavoriteMapper favoriteMapper;
+    Cloudinary cloudinary;
 
     public FavoriteResponse addFavorite(FavoriteRequest request) {
         User user = userRepository.findById(request.getUserId())
@@ -69,4 +73,44 @@ public class FavoriteService {
         return favoriteRepository.existsById(new FavoriteId(userId, listingId));
     }
 
+
+    private PostCard toCard(PostCardProjection p) {
+        PostCard card = new PostCard();
+        card.setListingId(p.getListingId());
+        card.setProductName(p.getProductName());
+        card.setAskPrice(p.getAskPrice());
+        card.setProductType(p.getProductType());
+
+        card.setProvinceCode(p.getProvinceCode());
+        card.setDistrictCode(p.getDistrictCode());
+        card.setWardCode(p.getWardCode());
+        card.setStreet(p.getStreet());
+        card.setPriorityLevel(p.getPriorityLevel());
+
+        // Ghép address nhanh (nếu có LocationService thì map code -> tên)
+        StringBuilder addr = new StringBuilder();
+        if (p.getStreet() != null && !p.getStreet().isBlank()) addr.append(p.getStreet());
+        if (p.getWardCode() != null)     addr.append(addr.length()>0?", ":"").append("Xã.").append(p.getWardCode());
+        if (p.getDistrictCode() != null) addr.append(addr.length()>0?", ":"").append("Huyện.").append(p.getDistrictCode());
+        if (p.getProvinceCode() != null) addr.append(addr.length()>0?", ":"").append("Tỉnh.").append(p.getProvinceCode());
+        card.setAddress(addr.toString());
+
+        // cover thumb (nếu có media)
+        String publicId = p.getCoverPublicId();
+        String type = p.getCoverType(); // IMAGE | VIDEO
+        if (publicId != null && !publicId.isBlank()) {
+            String resource = "VIDEO".equalsIgnoreCase(type) ? "video" : "image";
+            Transformation thumb = new Transformation()
+                    .width(320).height(320)
+                    .crop("fill").gravity("auto")
+                    .quality("auto").fetchFormat("auto");
+            String urlThumb = cloudinary.url()
+                    .resourceType(resource).secure(true)
+                    .transformation(thumb)
+                    .generate(publicId);
+            card.setCoverThumb(urlThumb);
+        }
+
+        return card;
+    }
 }
