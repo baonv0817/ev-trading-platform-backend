@@ -22,6 +22,6 @@ public interface FavoriteMapper {
     )
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     Favorite toFavorite(FavoriteRequest req, User user, SalePost listing);
-    
+
     FavoriteResponse toFavoriteResponse(Favorite favorite);
 }
