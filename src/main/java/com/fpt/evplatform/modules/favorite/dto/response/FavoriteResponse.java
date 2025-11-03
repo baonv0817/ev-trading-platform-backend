@@ -21,5 +21,6 @@ public class FavoriteResponse {
     Integer districtCode;
     Integer wardCode;
     String  street;
-    String  address;       // chuỗi gộp nhanh: street, W., D., P. (tuỳ bạn thay bằng tên)String  coverThumb;    // URL 320x320
+    String  address;       // chuỗi gộp nhanh: street, W., D., P. (tuỳ bạn thay bằng tên)
+    String  coverThumb;    // URL 320x320
 }

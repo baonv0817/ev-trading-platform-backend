@@ -22,12 +22,6 @@ public interface FavoriteMapper {
     )
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     Favorite toFavorite(FavoriteRequest req, User user, SalePost listing);
-
-    @Mapping(target = "userId", source = "user.userId")
-    @Mapping(target = "username", expression = "java(favorite.getUser().getUsername())")
-    @Mapping(target = "listingId", source = "listing.listingId")
-    @Mapping(target = "productType", source = "listing.productType")
-    @Mapping(target = "description", source = "listing.description")
-    @Mapping(target = "askPrice", source = "listing.askPrice")
+    
     FavoriteResponse toFavoriteResponse(Favorite favorite);
 }
