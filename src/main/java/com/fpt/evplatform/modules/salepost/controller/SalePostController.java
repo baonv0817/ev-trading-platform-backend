@@ -69,7 +69,6 @@ public class SalePostController {
     }
 
     @Operation(security = {})
-    // Detail: trả full media[]
     @GetMapping("/{listingId}")
     public PostResponse getDetail(@PathVariable Integer listingId) {
         return salePostQueryService.getDetail(listingId);

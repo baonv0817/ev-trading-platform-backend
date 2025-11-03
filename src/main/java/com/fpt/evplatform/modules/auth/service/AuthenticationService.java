@@ -1,12 +1,18 @@
 package com.fpt.evplatform.modules.auth.service;
 
 import com.fpt.evplatform.common.enums.ErrorCode;
+import com.fpt.evplatform.common.enums.Role;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.auth.dto.request.AuthenticationRequest;
+import com.fpt.evplatform.modules.auth.dto.request.ExchangeTokenRequest;
 import com.fpt.evplatform.modules.auth.dto.request.IntrospectRequest;
 import com.fpt.evplatform.modules.auth.dto.request.RefreshRequest;
 import com.fpt.evplatform.modules.auth.dto.response.AuthenticationResponse;
 import com.fpt.evplatform.modules.auth.dto.response.IntrospectResponse;
+import com.fpt.evplatform.modules.auth.repository.OutboundIdentityClient;
+import com.fpt.evplatform.modules.auth.repository.OutboundUserClient;
+import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
+import com.fpt.evplatform.modules.membership.repository.MembershipPlanRepository;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
 import com.nimbusds.jose.*;
@@ -35,10 +41,28 @@ import java.util.UUID;
 public class AuthenticationService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    OutboundIdentityClient outboundIdentityClient;
+    OutboundUserClient outboundUserClient;
+    MembershipPlanRepository membershipPlanRepository;
 
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
+
+    @NonFinal
+    @Value("${outbound.identity.client-id}")
+    protected String CLIENT_ID;
+
+    @NonFinal
+    @Value("${outbound.identity.client-secret}")
+    protected String CLIENT_SECRET;
+
+    @NonFinal
+    @Value("${outbound.identity.redirect-uri}")
+    protected String REDIRECT_URI;
+
+    @NonFinal
+    protected final String GRANT_TYPE = "authorization_code";
 
     public IntrospectResponse introspect(IntrospectRequest request)
             throws JOSEException, ParseException {
@@ -54,6 +78,40 @@ public class AuthenticationService {
         return IntrospectResponse.builder()
                 .valid(isValid)
                 .build();
+    }
+
+    public AuthenticationResponse outboundAuthenticate(String code) {
+        var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
+                        .code(code)
+                        .clientId(CLIENT_ID)
+                        .clientSecret(CLIENT_SECRET)
+                        .redirectUri(REDIRECT_URI)
+                        .grantType(GRANT_TYPE)
+                .build());
+        log.info("Outbound Authentication Response: {}", response);
+
+        var userInfo = outboundUserClient.getUserInfo("json", response.getAccessToken());
+
+        System.out.println(userInfo);
+        log.info("User Info {}", "User Info {}", userInfo);
+
+
+        MembershipPlan defaultPlan = membershipPlanRepository.findByName("Free")
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+        var user = userRepository.findByUsername(userInfo.getEmail()).orElseGet(
+                () -> userRepository.save(User.builder()
+                        .username(userInfo.getEmail())
+                        .firstName(userInfo.getGivenName())
+                        .lastName(userInfo.getFamilyName())
+                        .role(Role.USER.name())
+                        .plan(defaultPlan)
+                        .build()));
+
+        var token = generateToken(user);
+
+        System.out.println(token);
+
+        return AuthenticationResponse.builder().token(token).build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
@@ -104,6 +162,7 @@ public class AuthenticationService {
                 ))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", user.getRole())
+                .claim("id", user.getUserId())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
