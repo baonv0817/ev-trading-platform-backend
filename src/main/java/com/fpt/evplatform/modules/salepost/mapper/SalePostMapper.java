@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 public interface SalePostMapper {
 
     @Mapping(source = "seller.username", target ="seller")
+    @Mapping(source = "seller.userId", target = "sellerId")
     PostResponse toPostResponse(SalePost salePost);
 
     BatteryPostResponse toBatteryPostResponse(BatteryPost batteryPost);

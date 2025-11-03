@@ -16,6 +16,7 @@ public class PostResponse {
 
     private Integer listingId;
     private String seller;
+    private Integer sellerId;
     private ProductType productType;
     private BigDecimal askPrice;
     private String title;

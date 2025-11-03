@@ -12,5 +12,4 @@ public class MessageRequest {
     Integer senderId;
     Integer receiverId;
     String body;
-
 }
