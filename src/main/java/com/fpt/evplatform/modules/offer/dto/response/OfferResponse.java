@@ -15,6 +15,8 @@ public class OfferResponse {
     Integer buyerId;
     String buyerName;
     Integer listingId;
+    Integer sellerId;
+    String sellerName;
     Double proposedPrice;
     String status;
     LocalDateTime createdAt;

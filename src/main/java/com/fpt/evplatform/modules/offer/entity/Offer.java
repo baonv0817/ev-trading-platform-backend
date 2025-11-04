@@ -44,6 +44,6 @@ public class Offer {
             createdAt = LocalDateTime.now();
         }
 
-        expiresAt = LocalDateTime.now().plusDays(1);
+        expiresAt = LocalDateTime.now().plusDays(3);
     }
 }

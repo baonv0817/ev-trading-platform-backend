@@ -49,6 +49,14 @@ public class OfferController {
                 .build();
     }
 
+    @Operation(summary = "Get list of offers received by a Seller")
+    @GetMapping("/seller/{sellerId}")
+    public ApiResponse<List<OfferResponse>> getOffersBySeller(@PathVariable Integer sellerId) {
+        return ApiResponse.<List<OfferResponse>>builder()
+                .result(offerService.getOffersBySeller(sellerId))
+                .build();
+    }
+
     @Operation(summary = "View status of an Offer")
     @PutMapping("/{offerId}/status")
     public ApiResponse<OfferResponse> updateOfferStatus(

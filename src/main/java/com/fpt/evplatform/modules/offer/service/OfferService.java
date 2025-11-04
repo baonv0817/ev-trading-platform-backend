@@ -118,4 +118,18 @@ public class OfferService {
         }
         offerRepository.deleteById(offerId);
     }
+
+    public List<OfferResponse> getOffersBySeller(Integer sellerId) {
+        User seller = userRepository.findById(sellerId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<SalePost> sellerListings = salePostRepository.findBySeller(seller);
+
+        List<Offer> offers = offerRepository.findByListingIn(sellerListings);
+
+        return offers.stream()
+                .map(offerMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
 }

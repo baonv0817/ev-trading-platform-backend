@@ -22,6 +22,8 @@ public interface OfferMapper {
 
     @Mapping(target = "buyerId", source = "buyer.userId")
     @Mapping(target = "buyerName", expression = "java(offer.getBuyer().getUsername())")
+    @Mapping(target = "sellerId", source = "listing.seller.userId")
+    @Mapping(target = "sellerName", source = "listing.seller.username")
     @Mapping(target = "listingId", source = "listing.listingId")
     @Mapping(target = "status", source = "status")
     OfferResponse toResponse(Offer offer);
