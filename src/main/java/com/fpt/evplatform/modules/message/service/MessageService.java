@@ -91,4 +91,45 @@ public class MessageService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
+    public ConversationResponse createOrGetConversation(Integer senderId, Integer receiverId) {
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User receiver = userRepository.findById(receiverId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        String key = messageMapper.generateConversationKey(senderId, receiverId);
+
+        Message latest = messageRepository.findTopByConversationKeyOrderBySentAtDesc(key);
+
+        if (latest != null) {
+            return ConversationResponse.builder()
+                    .partnerId(receiver.getUserId())
+                    .partnerName(receiver.getUsername())
+                    .lastMessage(latest.getBody())
+                    .lastMessageSenderName(latest.getSender().getUsername())
+                    .sentAt(latest.getSentAt().toString())
+                    .build();
+        }
+
+        Message systemMessage = Message.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .body("Chat started")
+                .conversationKey(key)
+                .sentAt(java.time.LocalDateTime.now())
+                .build();
+
+        messageRepository.save(systemMessage);
+
+        return ConversationResponse.builder()
+                .partnerId(receiver.getUserId())
+                .partnerName(receiver.getUsername())
+                .lastMessage(systemMessage.getBody())
+                .lastMessageSenderName(sender.getUsername())
+                .sentAt(systemMessage.getSentAt().toString())
+                .build();
+    }
+
+
 }

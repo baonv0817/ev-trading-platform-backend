@@ -63,4 +63,15 @@ public class MessageController {
                 .build();
     }
 
+    @Operation(summary = "Create or get a conversation between two users")
+    @PostMapping("/conversation")
+    public ApiResponse<ConversationResponse> createOrGetConversation(@RequestParam Integer senderId,
+                                                                     @RequestParam Integer receiverId) {
+
+        return ApiResponse.<ConversationResponse>builder()
+                .result(messageService.createOrGetConversation(senderId, receiverId))
+                .message("Conversation created or fetched successfully")
+                .build();
+    }
+
 }
