@@ -13,6 +13,8 @@ import com.fpt.evplatform.modules.offer.entity.Offer;
 import com.fpt.evplatform.modules.offer.repository.OfferRepository;
 import com.fpt.evplatform.modules.platformsite.entity.PlatformSite;
 import com.fpt.evplatform.modules.platformsite.repository.PlatformSiteRepository;
+import com.fpt.evplatform.modules.user.entity.User;
+import com.fpt.evplatform.modules.user.repository.UserRepository;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class DealService {
     OfferRepository offerRepository;
     PlatformSiteRepository platformSiteRepository;
     EscrowService escrowService;
+    UserRepository userRepository;
 
     @Transactional
     public DealResponse createDeal(DealRequest req) {
@@ -120,4 +123,25 @@ public class DealService {
         }
         dealRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public List<DealResponse> getDealsByBuyer(Integer buyerId) {
+        User buyer = userRepository.findById(buyerId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return dealRepository.findByBuyer(buyer).stream()
+                .map(dealMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DealResponse> getDealsBySeller(Integer sellerId) {
+        User seller = userRepository.findById(sellerId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return dealRepository.findBySeller(seller).stream()
+                .map(dealMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
 }

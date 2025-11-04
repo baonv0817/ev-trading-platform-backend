@@ -86,4 +86,21 @@ public class DealController {
                 .message("Deal deleted successfully")
                 .build();
     }
+
+    @Operation(summary = "Get all deals for a specific buyer")
+    @GetMapping("/buyer/{buyerId}")
+    public ApiResponse<List<DealResponse>> getDealsByBuyer(@PathVariable Integer buyerId) {
+        return ApiResponse.<List<DealResponse>>builder()
+                .result(dealService.getDealsByBuyer(buyerId))
+                .build();
+    }
+
+    @Operation(summary = "Get all deals for a specific seller")
+    @GetMapping("/seller/{sellerId}")
+    public ApiResponse<List<DealResponse>> getDealsBySeller(@PathVariable Integer sellerId) {
+        return ApiResponse.<List<DealResponse>>builder()
+                .result(dealService.getDealsBySeller(sellerId))
+                .build();
+    }
+
 }
