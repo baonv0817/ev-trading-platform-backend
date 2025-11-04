@@ -96,6 +96,7 @@ public class SalePostQueryService {
         PostResponse dto = new PostResponse();
         dto.setListingId(sp.getListingId());
         dto.setSeller(sp.getSeller().getUsername());
+        dto.setSellerId(sp.getSeller().getUserId());
         dto.setProductType(sp.getProductType() != null ? sp.getProductType() : null);
         dto.setTitle(sp.getTitle());
         dto.setDescription(sp.getDescription());
