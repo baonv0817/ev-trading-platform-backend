@@ -1,5 +1,6 @@
 package com.fpt.evplatform.modules.message.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class ChatMessage {
     Integer senderId;
     Integer receiverId;
+    @JsonProperty("body")
     String content;
     String conversationKey;
     String sentAt;

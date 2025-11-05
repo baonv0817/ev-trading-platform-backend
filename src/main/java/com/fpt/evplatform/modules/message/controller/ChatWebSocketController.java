@@ -33,6 +33,11 @@ public class ChatWebSocketController {
 
     @MessageMapping("/chat.send")
     public void sendMessage(ChatMessage chatMessage, Principal principal) {
+        if (principal == null) {
+            log.error("❌ Principal is null — WebSocket authentication missing!");
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
         String senderUsername = principal.getName(); // from JWT
         log.info("Authenticated sender: {}", senderUsername);
 

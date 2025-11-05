@@ -22,6 +22,7 @@ import java.util.List;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
+    private final CustomHandshakeHandler customHandshakeHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -29,8 +30,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         registry.addEndpoint("/ws-chat")
                 .addInterceptors(jwtHandshakeInterceptor)
+                .setHandshakeHandler(customHandshakeHandler)
                 .setAllowedOriginPatterns("http://localhost:5173")
-                .withSockJS();
+                ;
 
         log.info("✅ SockJS endpoint /ws-chat registered (allowed origin: http://localhost:5173)");
     }
@@ -54,24 +56,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-                if (accessor != null && accessor.getUser() == null) {
+                if (accessor.getUser() == null) {
                     var sessionAttributes = accessor.getSessionAttributes();
                     if (sessionAttributes != null) {
-                        Object username = sessionAttributes.get("user");
-                        if (username != null) {
-                            Principal principal = new UsernamePasswordAuthenticationToken(
-                                    username, null, List.of()
-                            );
-                            accessor.setUser(principal);
-                            log.info("👤 Principal set for WebSocket session: {}", username);
+                        Object principal = sessionAttributes.get("principal");
+                        if (principal instanceof Principal userPrincipal) {
+                            accessor.setUser(userPrincipal);
+                            log.info("👤 Principal restored from handshake: {}", userPrincipal.getName());
+                        } else {
+                            log.warn("⚠️ No principal found in session attributes");
                         }
                     }
                 }
-
                 return message;
             }
         });
     }
+
 
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registry) {

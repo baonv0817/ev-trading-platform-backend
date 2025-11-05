@@ -11,7 +11,9 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
@@ -31,7 +33,6 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         log.info("   • Path: {}", path);
         log.info("   • Query: {}", query);
 
-        // ✅ Only skip internal SockJS handshake probes (NOT the real WebSocket)
         if (path.contains("/info") || path.contains("/xhr")) {
             log.debug("ℹ️ Allowing internal SockJS handshake path: {}", path);
             return true;
@@ -47,8 +48,10 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             Jwt jwt = jwtDecoder.decode(token);
             String username = jwt.getSubject();
 
+            // ✅ attach both for convenience
             attributes.put("jwt", jwt);
-            attributes.put("user", username);
+            attributes.put("username", username);
+            attributes.put("principal", (Principal) () -> username);
 
             log.info("✅ WebSocket handshake authenticated for user: {}", username);
             return true;
@@ -57,6 +60,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             return false;
         }
     }
+
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
