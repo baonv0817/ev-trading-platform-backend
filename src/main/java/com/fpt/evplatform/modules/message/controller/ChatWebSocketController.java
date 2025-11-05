@@ -47,6 +47,8 @@ public class ChatWebSocketController {
         User receiver = userRepository.findById(chatMessage.getReceiverId())
                 .orElseThrow(() -> new AppException(ErrorCode.RECEIVER_NOT_FOUND));
 
+        String conversationKey = messageMapper.generateConversationKey(sender.getUserId(), receiver.getUserId());
+
         Message entity = messageMapper.toMessage(
                 MessageRequest.builder()
                         .senderId(sender.getUserId())
@@ -57,7 +59,7 @@ public class ChatWebSocketController {
                 receiver
         );
 
-        entity.setConversationKey(chatMessage.getConversationKey());
+        entity.setConversationKey(conversationKey);
         entity.setSentAt(LocalDateTime.now());
         messageRepository.save(entity);
 
