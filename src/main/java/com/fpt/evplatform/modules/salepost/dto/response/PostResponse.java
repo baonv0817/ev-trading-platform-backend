@@ -32,6 +32,7 @@ public class PostResponse {
     private Integer priorityLevel;
     private LocalDateTime createdAt;
 
+
     private BatteryPostResponse batteryPost;
     private VehiclePostResponse vehiclePost;
 

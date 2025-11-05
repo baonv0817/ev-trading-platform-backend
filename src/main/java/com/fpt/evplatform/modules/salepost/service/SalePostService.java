@@ -214,4 +214,22 @@ public class SalePostService {
         saleRepo.save(sp);
     }
 
+    @Transactional
+    public void markAsSold(String username, Integer listingId) {
+        SalePost post = saleRepo.findByListingId(listingId)
+                .orElseThrow(() -> new NoSuchElementException("SalePost not found"));
+
+        if (!post.getSeller().getUsername().equals(username)) {
+            throw new AppException(ErrorCode.UNAUTHORIZED_ACTION);
+        }
+
+        if (post.getStatus() == PostStatus.SOLD) {
+            throw new AppException(ErrorCode.POST_ALREADY_SOLD);
+        }
+
+        post.setStatus(PostStatus.SOLD);
+        post.setUpdatedAt(LocalDateTime.now());
+        saleRepo.save(post);
+    }
+
 }

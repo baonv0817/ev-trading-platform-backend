@@ -13,9 +13,6 @@ public class PostAuthorization {
 
     private final SalePostRepository salePostRepository;
 
-    /**
-     * Cho phép nếu: ADMIN hoặc chủ bài đăng (so theo username).
-     */
     public boolean canModifySalePost(Authentication authentication, Integer listingId) {
         if (authentication == null || !authentication.isAuthenticated() || listingId == null) return false;
 

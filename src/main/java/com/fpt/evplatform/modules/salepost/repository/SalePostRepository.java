@@ -17,47 +17,49 @@ import java.util.Optional;
 public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
     @Query(
             value = """
-    SELECT
-      sp.listing_id        AS listingId,
-      sp.title             AS productName,
-      sp.ask_price         AS askPrice,
-      sp.product_type      AS productType,
-      sp.province_code     AS provinceCode,
-      sp.district_code     AS districtCode,
-      sp.ward_code         AS wardCode,
-      sp.street            AS street,
-      sp.priority_level AS priorityLevel,
-      (
-        SELECT m.public_id FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverPublicId,
-      (
-        SELECT m.type FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverType
-    FROM sale_posts sp
-    WHERE sp.status = 'ACTIVE'
-    ORDER BY
-      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
-      sp.priority_level DESC,
-      sp.created_at DESC
-  """,
+        SELECT
+          sp.listing_id        AS listingId,
+          sp.title             AS productName,
+          sp.ask_price         AS askPrice,
+          sp.product_type      AS productType,
+          sp.province_code     AS provinceCode,
+          sp.district_code     AS districtCode,
+          sp.status            AS status,
+          sp.ward_code         AS wardCode,
+          sp.street            AS street,
+          sp.priority_level    AS priorityLevel,
+          u.username           AS sellerUsername,
+          (
+            SELECT m.public_id FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverPublicId,
+          (
+            SELECT m.type FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverType
+        FROM sale_posts sp
+        JOIN users u ON sp.seller_id = u.user_id
+        WHERE sp.status = 'ACTIVE'
+        ORDER BY
+          CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+          sp.priority_level DESC,
+          sp.created_at DESC
+        """,
             countQuery = """
-    SELECT COUNT(*)
-    FROM sale_posts sp
-    WHERE sp.status = 'ACTIVE'
-  """,
+        SELECT COUNT(*)
+        FROM sale_posts sp
+        JOIN users u ON sp.seller_id = u.user_id
+        WHERE sp.status = 'ACTIVE'
+        """,
             nativeQuery = true
     )
     Page<PostCardProjection> findCards(Pageable pageable);
 
-
-    @Query(
-            value = """
+    @Query(value = """
     SELECT
       sp.listing_id        AS listingId,
       sp.title             AS productName,
@@ -67,7 +69,9 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
       sp.district_code     AS districtCode,
       sp.ward_code         AS wardCode,
       sp.street            AS street,
-      sp.priority_level AS priorityLevel,
+      sp.status            AS status,
+      sp.priority_level    AS priorityLevel,
+      u.username           AS sellerUsername,
       (
         SELECT m.public_id FROM media m
         WHERE m.listing_id = sp.listing_id
@@ -83,7 +87,10 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
     FROM sale_posts sp
     JOIN users u ON sp.seller_id = u.user_id
     WHERE u.username = :username
-    ORDER BY sp.created_at DESC
+    ORDER BY
+      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+      sp.priority_level DESC,
+      sp.created_at DESC
     """,
             countQuery = """
     SELECT COUNT(*)
@@ -95,8 +102,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
     )
     Page<PostCardProjection> findCardsByUsername(@org.springframework.data.repository.query.Param("username") String username, Pageable pageable);
 
-    @Query(
-            value = """
+    @Query(value = """
     SELECT
       sp.listing_id        AS listingId,
       sp.title             AS productName,
@@ -105,8 +111,10 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
       sp.province_code     AS provinceCode,
       sp.district_code     AS districtCode,
       sp.ward_code         AS wardCode,
+      sp.status            AS status,
       sp.street            AS street,
       sp.priority_level    AS priorityLevel,
+      u.username           AS sellerUsername,
       (
         SELECT m.public_id
         FROM media m
@@ -123,26 +131,30 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
       ) AS coverType
     FROM favorites f
     JOIN sale_posts sp ON sp.listing_id = f.listing_id
+    JOIN users u ON u.user_id = sp.seller_id
     WHERE f.user_id = :userId
+      AND sp.status = 'ACTIVE'
     ORDER BY
-      f.created_at DESC,
+      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
       sp.priority_level DESC,
-      sp.created_at DESC
+      f.created_at DESC
     """,
             countQuery = """
     SELECT COUNT(*)
     FROM favorites f
     JOIN sale_posts sp ON sp.listing_id = f.listing_id
     WHERE f.user_id = :userId
-    AND sp.status = 'ACTIVE'
+      AND sp.status = 'ACTIVE'
     """,
             nativeQuery = true
     )
-    Page<PostCardProjection> findFavoriteCardsByUserId(Integer userId, Pageable pageable);
+    Page<PostCardProjection> findFavoriteCardsByUserId(
+            Integer userId,
+            Pageable pageable
+    );
 
 
-    @Query(
-            value = """
+    @Query(value = """
     SELECT
       sp.listing_id        AS listingId,
       sp.title             AS productName,
@@ -152,7 +164,9 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
       sp.district_code     AS districtCode,
       sp.ward_code         AS wardCode,
       sp.street            AS street,
-    sp.priority_level AS priorityLevel,
+      sp.status            AS status,
+      sp.priority_level    AS priorityLevel,
+      u.username           AS sellerUsername,
       (
         SELECT m.public_id FROM media m
         WHERE m.listing_id = sp.listing_id
@@ -166,6 +180,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
         LIMIT 1
       ) AS coverType
     FROM sale_posts sp
+    JOIN users u ON sp.seller_id = u.user_id
     WHERE sp.status = 'ACTIVE'
       AND sp.product_type = 'VEHICLE'
     ORDER BY
@@ -184,8 +199,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
     Page<PostCardProjection> findVehiclePosts(Pageable pageable);
 
 
-    @Query(
-            value = """
+    @Query(value = """
     SELECT
       sp.listing_id        AS listingId,
       sp.title             AS productName,
@@ -195,7 +209,9 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
       sp.district_code     AS districtCode,
       sp.ward_code         AS wardCode,
       sp.street            AS street,
-      sp.priority_level AS priorityLevel,
+      sp.status            AS status,
+      sp.priority_level    AS priorityLevel,
+      u.username           AS sellerUsername,
       (
         SELECT m.public_id FROM media m
         WHERE m.listing_id = sp.listing_id
@@ -209,6 +225,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
         LIMIT 1
       ) AS coverType
     FROM sale_posts sp
+    JOIN users u ON sp.seller_id = u.user_id
     WHERE sp.status = 'ACTIVE'
       AND sp.product_type = 'BATTERY'
     ORDER BY

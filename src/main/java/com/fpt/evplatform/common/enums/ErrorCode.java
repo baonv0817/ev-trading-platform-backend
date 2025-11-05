@@ -23,6 +23,8 @@ public enum ErrorCode {
     SALE_POST_MEMBERSHIP_REQUIRED(4001, "You must have an active membership plan to create a sale post", HttpStatus.FORBIDDEN),
     SALE_POST_PLAN_EXPIRED(4002, "Your membership plan has expired", HttpStatus.FORBIDDEN),
     SALE_POST_LIMIT_REACHED(4003, "You have reached the maximum number of sale posts allowed for your plan", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED_ACTION(4004, "Unauthorized action", HttpStatus.UNAUTHORIZED),
+    POST_ALREADY_SOLD(4005, "Post already sold", HttpStatus.BAD_REQUEST),
     BATTERY_DETAIL_REQUIRED(4101, "Battery detail is required for BATTERY product type", HttpStatus.BAD_REQUEST),
     VEHICLE_DETAIL_REQUIRED(4102, "Vehicle detail is required for VEHICLE product type", HttpStatus.BAD_REQUEST),
     BATTERY_DETAIL_MUST_BE_NULL(4103, "Battery detail must be null for VEHICLE product type", HttpStatus.BAD_REQUEST),

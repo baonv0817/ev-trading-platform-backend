@@ -74,6 +74,18 @@ public class SalePostController {
         return salePostQueryService.getDetail(listingId);
     }
 
+    @PatchMapping("/{listingId}/sold")
+    @PreAuthorize("@postAuth.canModifySalePost(authentication, #listingId)")
+    public ApiResponse<Void> markAsSold(
+            @AuthenticationPrincipal(expression = "subject") String username,
+            @PathVariable Integer listingId
+    ) {
+        service.markAsSold(username, listingId);
+        return ApiResponse.<Void>builder()
+                .message("Marked as sold")
+                .build();
+    }
+
     @PatchMapping("/{listingId}")
     @PreAuthorize("@postAuth.canModifySalePost(authentication, #listingId)")
     public PostResponse update(@PathVariable Integer listingId,

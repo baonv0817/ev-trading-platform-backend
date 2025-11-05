@@ -47,19 +47,20 @@ public class SalePostQueryService {
     }
 
 
-
     private PostCard toCard(PostCardProjection p) {
         PostCard card = new PostCard();
         card.setListingId(p.getListingId());
         card.setProductName(p.getProductName());
         card.setAskPrice(p.getAskPrice());
         card.setProductType(p.getProductType());
-
         card.setProvinceCode(p.getProvinceCode());
         card.setDistrictCode(p.getDistrictCode());
         card.setWardCode(p.getWardCode());
         card.setStreet(p.getStreet());
+        card.setStatus(p.getStatus());
         card.setPriorityLevel(p.getPriorityLevel());
+        card.setSellerUsername(p.getSellerUsername());
+
 
         // Ghép address nhanh (nếu có LocationService thì map code -> tên)
         StringBuilder addr = new StringBuilder();
@@ -84,7 +85,6 @@ public class SalePostQueryService {
                     .generate(publicId);
             card.setCoverThumb(urlThumb);
         }
-
         return card;
     }
 
@@ -118,6 +118,7 @@ public class SalePostQueryService {
         dto.setTitle(sp.getTitle());
         dto.setDescription(sp.getDescription());
         dto.setAskPrice(sp.getAskPrice());
+        dto.setStatus(sp.getStatus());
         dto.setStatus(sp.getStatus() != null ? sp.getStatus(): null);
         dto.setProvinceCode(sp.getProvinceCode());
         dto.setDistrictCode(sp.getDistrictCode());
