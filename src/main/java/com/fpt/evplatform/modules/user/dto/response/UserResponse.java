@@ -25,6 +25,7 @@ public class UserResponse {
     Integer provinceCode;
     Integer districtCode;
     Integer wardCode;
+    String status;
     String bio;
     String avatarUrl;
     String avatarPublicId;

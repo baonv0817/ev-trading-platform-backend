@@ -3,9 +3,13 @@ package com.fpt.evplatform.modules.inspectionorder.controller;
 import com.fpt.evplatform.modules.inspectionorder.dto.request.CreateOrderRequest;
 import com.fpt.evplatform.modules.inspectionorder.dto.request.FinishInspectionRequest;
 import com.fpt.evplatform.modules.inspectionorder.dto.response.CreateCheckoutResponse;
+import com.fpt.evplatform.modules.inspectionorder.dto.response.InspectionOrderResponse;
 import com.fpt.evplatform.modules.inspectionorder.service.InspectionOrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +43,13 @@ public class InspectionOrderController {
     @PostMapping("/{orderId}/inspect")
     public void completeInspection(@PathVariable Integer orderId, @RequestBody FinishInspectionRequest req) {
         orderService.completeInspection(orderId, req);
+    }
+
+    @GetMapping
+    public Page<InspectionOrderResponse> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return orderService.listAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
     }
 }

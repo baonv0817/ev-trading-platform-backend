@@ -9,6 +9,7 @@ import com.fpt.evplatform.modules.inspectionorder.config.InspectionConstants;
 import com.fpt.evplatform.modules.inspectionorder.dto.request.CreateOrderRequest;
 import com.fpt.evplatform.modules.inspectionorder.dto.request.FinishInspectionRequest;
 import com.fpt.evplatform.modules.inspectionorder.dto.response.CreateCheckoutResponse;
+import com.fpt.evplatform.modules.inspectionorder.dto.response.InspectionOrderResponse;
 import com.fpt.evplatform.modules.inspectionorder.entity.InspectionOrder;
 import com.fpt.evplatform.modules.inspectionorder.repository.InspectionOrderRepository;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
@@ -22,6 +23,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -129,5 +132,27 @@ public class InspectionOrderService {
         orderRepo.save(order);
 
         reportFlowService.createReportFromInspectionResult(order, req.getResult());
+    }
+
+
+    public Page<InspectionOrderResponse> listAll(Pageable pageable) {
+        return orderRepo.findAll(pageable).map(this::toResponse);
+    }
+
+    private InspectionOrderResponse toResponse(InspectionOrder od) {
+        InspectionOrderResponse dto = new InspectionOrderResponse();
+        dto.setOrderId(od.getOrderId());
+        dto.setListingId(od.getSalePost().getListingId());
+        dto.setStatus(od.getStatus());
+        dto.setPaymentStatus(od.getPaymentStatus());
+        dto.setScheduledAt(od.getScheduledAt());
+        dto.setProvinceCode(od.getProvinceCode());
+        dto.setDistrictCode(od.getDistrictCode());
+        dto.setWardCode(od.getWardCode());
+        dto.setStreet(od.getStreet());
+        dto.setAmount(od.getAmount());
+        dto.setCreatedAt(od.getCreatedAt());
+        dto.setPaidAt(od.getPaidAt());
+        return dto;
     }
 }

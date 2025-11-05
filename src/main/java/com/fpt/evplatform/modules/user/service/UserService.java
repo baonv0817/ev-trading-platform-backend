@@ -2,11 +2,13 @@ package com.fpt.evplatform.modules.user.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
+import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
 import com.fpt.evplatform.modules.membership.repository.MembershipPlanRepository;
 import com.fpt.evplatform.modules.salepost.dto.response.PostResponse;
+import com.fpt.evplatform.modules.salepost.entity.SalePost;
 import com.fpt.evplatform.modules.salepost.mapper.SalePostMapper;
 import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.dto.request.UserCreationRequest;
@@ -35,6 +37,7 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     MembershipPlanRepository membershipPlanRepository;
+    SalePostRepository salePostRepository;
     Cloudinary cloudinary;
 
 
@@ -62,6 +65,8 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXISTED));
         user.setStatus("BANNED");
+        List<SalePost> posts = salePostRepository.findBySeller(user);
+        posts.forEach(post -> post.setStatus(PostStatus.HIDDEN));
         userRepository.save(user);
     }
 
