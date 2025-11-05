@@ -134,6 +134,7 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
     FROM favorites f
     JOIN sale_posts sp ON sp.listing_id = f.listing_id
     WHERE f.user_id = :userId
+    AND sp.status = 'ACTIVE'
     """,
             nativeQuery = true
     )

@@ -116,19 +116,6 @@ public class InspectionOrderService {
         log.info("Order #{} payment confirmed manually by user", orderId);
     }
 
-    // 4. Bắt đầu kiểm định (tuỳ chọn)
-//    @Transactional
-//    public void startInspection(Integer orderId) {
-//        InspectionOrder order = orderRepo.findById(orderId)
-//                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-//
-//        if (order.getPaymentStatus() != PaymentStatus.PAID)
-//            throw new IllegalStateException("Order chưa thanh toán!");
-//
-//        order.setStatus(InspectionOrderStatus.IN_PROGRESS);
-//        orderRepo.save(order);
-//    }
-
     // 5. Hoàn tất kiểm định
     @Transactional
     public void completeInspection(Integer orderId, FinishInspectionRequest req) {

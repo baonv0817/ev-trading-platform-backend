@@ -16,6 +16,7 @@ public class PostCard {
     private Integer wardCode;
     private String  street;
 
+
     private String  address;       // chuỗi gộp nhanh: street, W., D., P. (tuỳ bạn thay bằng tên)
     private String  coverThumb;    // URL 320x320
 }

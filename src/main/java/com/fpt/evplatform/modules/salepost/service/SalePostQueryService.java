@@ -95,7 +95,24 @@ public class SalePostQueryService {
 
         PostResponse dto = new PostResponse();
         dto.setListingId(sp.getListingId());
-        dto.setSeller(sp.getSeller().getUsername());
+        dto.setSellerUsername(sp.getSeller().getUsername());
+        dto.setSellerPhone(sp.getSeller().getPhone());
+        dto.setSellerAvatarUrl(sp.getSeller().getAvatarUrl());
+        if (sp.getSeller().getAvatarPublicId() != null) {
+            String thumb = cloudinary.url()
+                    .resourceType("image")
+                    .secure(true)
+                    .transformation(new com.cloudinary.Transformation<>()
+                            .width(256)
+                            .height(256)
+                            .crop("thumb")
+                            .gravity("face")
+                            .quality("auto")
+                            .fetchFormat("auto"))
+                    .generate(sp.getSeller().getAvatarPublicId());
+
+            dto.setSellerAvatarThumbUrl(thumb);
+        }
         dto.setSellerId(sp.getSeller().getUserId());
         dto.setProductType(sp.getProductType() != null ? sp.getProductType() : null);
         dto.setTitle(sp.getTitle());

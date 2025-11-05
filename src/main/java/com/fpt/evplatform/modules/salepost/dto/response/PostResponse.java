@@ -15,8 +15,11 @@ import java.util.List;
 public class PostResponse {
 
     private Integer listingId;
-    private String seller;
     private Integer sellerId;
+    private String  sellerUsername;
+    private String  sellerAvatarUrl;
+    private String  sellerAvatarThumbUrl;
+    private String sellerPhone;
     private ProductType productType;
     private BigDecimal askPrice;
     private String title;

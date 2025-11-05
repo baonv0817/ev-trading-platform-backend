@@ -14,4 +14,6 @@ public interface PostCardProjection {
     String  getStreet();
     String  getCoverPublicId();
     String  getCoverType();     // IMAGE | VIDEO | null
+    String getSellerUsername();
+    String getSellerAvatar();
 }

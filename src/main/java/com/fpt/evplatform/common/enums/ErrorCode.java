@@ -51,6 +51,10 @@ public enum ErrorCode {
     RECEIVER_NOT_FOUND(7001, "Receiver not found", HttpStatus.NOT_FOUND),
     REVIEW_ALREADY_EXISTED(8000, "Review already existed", HttpStatus.BAD_REQUEST),
     REVIEW_NOT_FOUND(8001, "Review not found", HttpStatus.NOT_FOUND),
+    FILE_REQUIRED(9000, "File is required", HttpStatus.BAD_REQUEST),
+    FILE_TOO_LARGE(9001, "File is too large", HttpStatus.BAD_REQUEST),
+    FILE_TYPE_NOT_ALLOWED(9002, "File type not allowed", HttpStatus.BAD_REQUEST),
+    FILE_UPLOAD_FAILED(9003, "File upload failed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

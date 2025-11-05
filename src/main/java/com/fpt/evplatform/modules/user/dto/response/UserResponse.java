@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponse {
     Integer userId;
     String username;
@@ -26,6 +26,9 @@ public class UserResponse {
     Integer districtCode;
     Integer wardCode;
     String bio;
+    String avatarUrl;
+    String avatarPublicId;
+    String avatarThumbUrl;
     MembershipPlanResponse plan;
     String planStatus;
     LocalDateTime startAt;

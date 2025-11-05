@@ -1,5 +1,7 @@
 package com.fpt.evplatform.modules.user.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
@@ -31,10 +33,10 @@ import java.util.List;
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
-    SalePostRepository salePostRepository;
-    SalePostMapper salePostMapper;
     PasswordEncoder passwordEncoder;
     MembershipPlanRepository membershipPlanRepository;
+    Cloudinary cloudinary;
+
 
     public UserResponse createUser(UserCreationRequest request, String role){
         if (userRepository.existsByUsername(request.getUsername()))
@@ -62,7 +64,21 @@ public class UserService {
         User user = userRepository.findByUsername(name).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        return userMapper.toUserResponse(user);
+        UserResponse dto = userMapper.toUserResponse(user);
+
+        if (user.getAvatarPublicId() != null) {
+            String thumbUrl = cloudinary.url()
+                    .resourceType("image")
+                    .secure(true)
+                    .transformation(new Transformation()
+                            .width(256).height(256)
+                            .crop("thumb").gravity("face")
+                            .quality("auto").fetchFormat("auto"))
+                    .generate(user.getAvatarPublicId());
+            dto.setAvatarThumbUrl(thumbUrl);
+        }
+
+        return dto;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

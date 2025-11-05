@@ -45,8 +45,8 @@ outbound:
 
 app:
   checkout:
-    success-url: "https://frontend.yourapp.com/checkout/success"
-    cancel-url: "https://frontend.yourapp.com/checkout/cancel"
+    success-url: "http://localhost:5173/inspectionCheckout/success?success=true"
+    cancel-url: "http://localhost:5173/inspectionCheckout/success?success=false"
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}

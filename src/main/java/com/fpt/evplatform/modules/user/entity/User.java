@@ -43,9 +43,9 @@ public class User {
     @JoinColumn(name = "plan_id")
     MembershipPlan plan;
 
-//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn
-//    SalePost post;
+    String avatarUrl;
+    String avatarPublicId;
+
     String planStatus;
     String role;
     LocalDateTime startAt;
