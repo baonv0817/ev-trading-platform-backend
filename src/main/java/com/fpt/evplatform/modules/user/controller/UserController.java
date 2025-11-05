@@ -32,20 +32,10 @@ public class UserController {
                 .build();
     }
 
-//    @PostMapping
-//    ApiResponse<UserResponse> createManager(@RequestBody @Valid UserCreationRequest request){
-//        return ApiResponse.<UserResponse>builder()
-//                .result(userService.createUser(request, Role.MANAGER.name()))
-//                .build();
-//    }
+
 
     @GetMapping
     ApiResponse<List<UserResponse>> getUsers(){
-//        var authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        log.info("Username: {}", authentication.getName());
-//        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getUsers())
                 .build();
@@ -71,6 +61,14 @@ public class UserController {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder()
                 .result("User has been deleted")
+                .build();
+    }
+
+    @PostMapping("/{userId}")
+    ApiResponse<String> banUser(@PathVariable Integer userId){
+        userService.banUser(userId);
+        return ApiResponse.<String>builder()
+                .result("User has been banned")
                 .build();
     }
 

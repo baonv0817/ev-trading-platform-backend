@@ -46,6 +46,8 @@ public class User {
     String avatarUrl;
     String avatarPublicId;
 
+    String status;
+
     String planStatus;
     String role;
     LocalDateTime startAt;

@@ -48,6 +48,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
         user.setPlan(defaultPlan);
         user.setRole(role);
+        user.setStatus("ACTIVE");
         userRepository.save(user);
         System.out.println(user);
         return userMapper.toUserResponse(user);
@@ -56,6 +57,14 @@ public class UserService {
     public void deleteUser(Integer userId){
         userRepository.deleteById(userId);
     }
+
+    public void banUser(Integer userId){
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setStatus("BANNED");
+        userRepository.save(user);
+    }
+
 
     public UserResponse getMyInfo(){
         var context = SecurityContextHolder.getContext();
