@@ -105,6 +105,7 @@ public class AuthenticationService {
                         .lastName(userInfo.getFamilyName())
                         .role(Role.USER.name())
                         .plan(defaultPlan)
+                                .status("ACTIVE")
                         .build()));
 
         var token = generateToken(user);
