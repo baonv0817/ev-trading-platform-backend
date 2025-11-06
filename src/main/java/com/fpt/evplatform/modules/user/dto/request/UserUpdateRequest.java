@@ -21,7 +21,6 @@ public class UserUpdateRequest {
     @Column(unique = true)
     String phone;
 
-    String password;
     Integer provinceCode;
     Integer districtCode;
     Integer wardCode;
