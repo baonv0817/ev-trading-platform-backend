@@ -15,6 +15,7 @@ public interface PostCardProjection {
     Integer getWardCode();
     String getSellerUsername();
     PostStatus getStatus();
+    String getInspectionStatus();
     String  getStreet();
     String  getCoverPublicId();
     String  getCoverType();     // IMAGE | VIDEO | null

@@ -32,10 +32,11 @@ public class PostResponse {
     private Integer priorityLevel;
     private LocalDateTime createdAt;
 
-
     private BatteryPostResponse batteryPost;
     private VehiclePostResponse vehiclePost;
 
+    private Boolean inspected;          // true nếu có ít nhất 1 report
+    private String inspectionStatus;
     private List<MediaResponse> media;
 
 }

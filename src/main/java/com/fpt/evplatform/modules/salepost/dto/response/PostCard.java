@@ -20,5 +20,7 @@ public class PostCard {
     private String  address;
     private String  coverThumb;
 
+    private Boolean inspected;
+    private String inspectionStatus;
     private String sellerUsername;
 }

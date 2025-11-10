@@ -5,6 +5,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.fpt.evplatform.modules.batterypost.dto.response.BatteryPostResponse;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
+import com.fpt.evplatform.modules.inspectionreport.repository.InspectionReportRepository;
 import com.fpt.evplatform.modules.media.dto.response.MediaResponse;
 import com.fpt.evplatform.modules.media.entity.Media;
 import com.fpt.evplatform.modules.salepost.dto.response.PostCard;
@@ -28,6 +29,7 @@ public class SalePostQueryService {
 
     private final SalePostRepository salePostRepository;
     private final Cloudinary cloudinary;
+    private final InspectionReportRepository  inspectionReportRepository;
 
     // ---------- LISTING ----------
     public Page<PostCard> listCards(Pageable pageable) {
@@ -69,6 +71,10 @@ public class SalePostQueryService {
         if (p.getDistrictCode() != null) addr.append(addr.length()>0?", ":"").append("Huyện.").append(p.getDistrictCode());
         if (p.getProvinceCode() != null) addr.append(addr.length()>0?", ":"").append("Tỉnh.").append(p.getProvinceCode());
         card.setAddress(addr.toString());
+
+        String insp = p.getInspectionStatus();
+        card.setInspected(insp != null && !insp.isBlank());
+        card.setInspectionStatus(insp);
 
         // cover thumb (nếu có media)
         String publicId = p.getCoverPublicId();
@@ -134,6 +140,10 @@ public class SalePostQueryService {
         if (sp.getVehiclePost() != null) {
             dto.setVehiclePost(toVehicleDto(sp.getVehiclePost()));
         }
+
+        String inspStatus = inspectionReportRepository.findLatestStatusByListingId(listingId);
+        dto.setInspected(inspStatus != null && !inspStatus.isBlank());
+        dto.setInspectionStatus(inspStatus);
 
 
         if (sp.getMediaList() != null) {

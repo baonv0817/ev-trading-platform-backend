@@ -22,19 +22,29 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
           sp.title             AS productName,
           sp.ask_price         AS askPrice,
           sp.product_type      AS productType,
+          sp.status            AS status,
           sp.province_code     AS provinceCode,
           sp.district_code     AS districtCode,
-          sp.status            AS status,
           sp.ward_code         AS wardCode,
           sp.street            AS street,
           sp.priority_level    AS priorityLevel,
           u.username           AS sellerUsername,
+
+          (
+            SELECT ir.status
+            FROM inspection_reports ir
+            WHERE ir.listing_id = sp.listing_id
+            ORDER BY ir.created_at DESC
+            LIMIT 1
+          ) AS inspectionStatus,
+
           (
             SELECT m.public_id FROM media m
             WHERE m.listing_id = sp.listing_id
             ORDER BY m.sort_order ASC
             LIMIT 1
           ) AS coverPublicId,
+
           (
             SELECT m.type FROM media m
             WHERE m.listing_id = sp.listing_id
@@ -52,193 +62,231 @@ public interface SalePostRepository extends JpaRepository<SalePost, Integer> {
             countQuery = """
         SELECT COUNT(*)
         FROM sale_posts sp
-        JOIN users u ON sp.seller_id = u.user_id
         WHERE sp.status = 'ACTIVE'
         """,
             nativeQuery = true
     )
     Page<PostCardProjection> findCards(Pageable pageable);
 
-    @Query(value = """
-    SELECT
-      sp.listing_id        AS listingId,
-      sp.title             AS productName,
-      sp.ask_price         AS askPrice,
-      sp.product_type      AS productType,
-      sp.province_code     AS provinceCode,
-      sp.district_code     AS districtCode,
-      sp.ward_code         AS wardCode,
-      sp.street            AS street,
-      sp.status            AS status,
-      sp.priority_level    AS priorityLevel,
-      u.username           AS sellerUsername,
-      (
-        SELECT m.public_id FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverPublicId,
-      (
-        SELECT m.type FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverType
-    FROM sale_posts sp
-    JOIN users u ON sp.seller_id = u.user_id
-    WHERE u.username = :username
-    ORDER BY
-      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
-      sp.priority_level DESC,
-      sp.created_at DESC
-    """,
+    @Query(
+            value = """
+        SELECT
+          sp.listing_id        AS listingId,
+          sp.title             AS productName,
+          sp.ask_price         AS askPrice,
+          sp.product_type      AS productType,
+          sp.status            AS status,
+          sp.province_code     AS provinceCode,
+          sp.district_code     AS districtCode,
+          sp.ward_code         AS wardCode,
+          sp.street            AS street,
+          sp.priority_level    AS priorityLevel,
+          u.username           AS sellerUsername,
+
+          (
+            SELECT ir.status
+            FROM inspection_reports ir
+            WHERE ir.listing_id = sp.listing_id
+            ORDER BY ir.created_at DESC
+            LIMIT 1
+          ) AS inspectionStatus,
+
+          (
+            SELECT m.public_id FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverPublicId,
+
+          (
+            SELECT m.type FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverType
+        FROM sale_posts sp
+        JOIN users u ON sp.seller_id = u.user_id
+        WHERE u.username = :username
+        ORDER BY
+          CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+          sp.priority_level DESC,
+          sp.created_at DESC
+        """,
             countQuery = """
-    SELECT COUNT(*)
-    FROM sale_posts sp
-    JOIN users u ON sp.seller_id = u.user_id
-    WHERE u.username = :username
-    """,
+        SELECT COUNT(*)
+        FROM sale_posts sp
+        JOIN users u ON sp.seller_id = u.user_id
+        WHERE u.username = :username
+        """,
             nativeQuery = true
     )
     Page<PostCardProjection> findCardsByUsername(@org.springframework.data.repository.query.Param("username") String username, Pageable pageable);
 
-    @Query(value = """
-    SELECT
-      sp.listing_id        AS listingId,
-      sp.title             AS productName,
-      sp.ask_price         AS askPrice,
-      sp.product_type      AS productType,
-      sp.province_code     AS provinceCode,
-      sp.district_code     AS districtCode,
-      sp.ward_code         AS wardCode,
-      sp.status            AS status,
-      sp.street            AS street,
-      sp.priority_level    AS priorityLevel,
-      u.username           AS sellerUsername,
-      (
-        SELECT m.public_id
-        FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverPublicId,
-      (
-        SELECT m.type
-        FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverType
-    FROM favorites f
-    JOIN sale_posts sp ON sp.listing_id = f.listing_id
-    JOIN users u ON u.user_id = sp.seller_id
-    WHERE f.user_id = :userId
-      AND sp.status = 'ACTIVE'
-    ORDER BY
-      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
-      sp.priority_level DESC,
-      f.created_at DESC
-    """,
+    @Query(
+            value = """
+        SELECT
+          sp.listing_id        AS listingId,
+          sp.title             AS productName,
+          sp.ask_price         AS askPrice,
+          sp.product_type      AS productType,
+          sp.status            AS status,
+          sp.province_code     AS provinceCode,
+          sp.district_code     AS districtCode,
+          sp.ward_code         AS wardCode,
+          sp.street            AS street,
+          sp.priority_level    AS priorityLevel,
+          u.username           AS sellerUsername,
+
+          (
+            SELECT ir.status
+            FROM inspection_reports ir
+            WHERE ir.listing_id = sp.listing_id
+            ORDER BY ir.created_at DESC
+            LIMIT 1
+          ) AS inspectionStatus,
+
+          (
+            SELECT m.public_id
+            FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverPublicId,
+
+          (
+            SELECT m.type
+            FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverType
+        FROM favorites f
+        JOIN sale_posts sp ON sp.listing_id = f.listing_id
+        JOIN users u ON u.user_id = sp.seller_id
+        WHERE f.user_id = :userId
+          AND sp.status = 'ACTIVE'
+        ORDER BY
+          CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+          sp.priority_level DESC,
+          f.created_at DESC
+        """,
             countQuery = """
-    SELECT COUNT(*)
-    FROM favorites f
-    JOIN sale_posts sp ON sp.listing_id = f.listing_id
-    WHERE f.user_id = :userId
-      AND sp.status = 'ACTIVE'
-    """,
+        SELECT COUNT(*)
+        FROM favorites f
+        JOIN sale_posts sp ON sp.listing_id = f.listing_id
+        WHERE f.user_id = :userId
+          AND sp.status = 'ACTIVE'
+        """,
             nativeQuery = true
     )
-    Page<PostCardProjection> findFavoriteCardsByUserId(
-            Integer userId,
-            Pageable pageable
-    );
+    Page<PostCardProjection> findFavoriteCardsByUserId(@org.springframework.data.repository.query.Param("userId") Integer userId, Pageable pageable);
 
+    @Query(
+            value = """
+        SELECT
+          sp.listing_id        AS listingId,
+          sp.title             AS productName,
+          sp.ask_price         AS askPrice,
+          sp.product_type      AS productType,
+          sp.status            AS status,
+          sp.province_code     AS provinceCode,
+          sp.district_code     AS districtCode,
+          sp.ward_code         AS wardCode,
+          sp.street            AS street,
+          sp.priority_level    AS priorityLevel,
+          u.username           AS sellerUsername,
 
-    @Query(value = """
-    SELECT
-      sp.listing_id        AS listingId,
-      sp.title             AS productName,
-      sp.ask_price         AS askPrice,
-      sp.product_type      AS productType,
-      sp.province_code     AS provinceCode,
-      sp.district_code     AS districtCode,
-      sp.ward_code         AS wardCode,
-      sp.street            AS street,
-      sp.status            AS status,
-      sp.priority_level    AS priorityLevel,
-      u.username           AS sellerUsername,
-      (
-        SELECT m.public_id FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverPublicId,
-      (
-        SELECT m.type FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverType
-    FROM sale_posts sp
-    JOIN users u ON sp.seller_id = u.user_id
-    WHERE sp.status = 'ACTIVE'
-      AND sp.product_type = 'VEHICLE'
-    ORDER BY
-      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
-      sp.priority_level DESC,
-      sp.created_at DESC
-    """,
+          (
+            SELECT ir.status
+            FROM inspection_reports ir
+            WHERE ir.listing_id = sp.listing_id
+            ORDER BY ir.created_at DESC
+            LIMIT 1
+          ) AS inspectionStatus,
+
+          (
+            SELECT m.public_id FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverPublicId,
+
+          (
+            SELECT m.type FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverType
+        FROM sale_posts sp
+        JOIN users u ON sp.seller_id = u.user_id
+        WHERE sp.status = 'ACTIVE'
+          AND sp.product_type = 'VEHICLE'
+        ORDER BY
+          CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+          sp.priority_level DESC,
+          sp.created_at DESC
+        """,
             countQuery = """
-    SELECT COUNT(*)
-    FROM sale_posts sp
-    WHERE sp.status = 'ACTIVE'
-      AND sp.product_type = 'VEHICLE'
-    """,
+        SELECT COUNT(*)
+        FROM sale_posts sp
+        WHERE sp.status = 'ACTIVE'
+          AND sp.product_type = 'VEHICLE'
+        """,
             nativeQuery = true
     )
     Page<PostCardProjection> findVehiclePosts(Pageable pageable);
 
+    @Query(
+            value = """
+        SELECT
+          sp.listing_id        AS listingId,
+          sp.title             AS productName,
+          sp.ask_price         AS askPrice,
+          sp.product_type      AS productType,
+          sp.status            AS status,
+          sp.province_code     AS provinceCode,
+          sp.district_code     AS districtCode,
+          sp.ward_code         AS wardCode,
+          sp.street            AS street,
+          sp.priority_level    AS priorityLevel,
+          u.username           AS sellerUsername,
 
-    @Query(value = """
-    SELECT
-      sp.listing_id        AS listingId,
-      sp.title             AS productName,
-      sp.ask_price         AS askPrice,
-      sp.product_type      AS productType,
-      sp.province_code     AS provinceCode,
-      sp.district_code     AS districtCode,
-      sp.ward_code         AS wardCode,
-      sp.street            AS street,
-      sp.status            AS status,
-      sp.priority_level    AS priorityLevel,
-      u.username           AS sellerUsername,
-      (
-        SELECT m.public_id FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverPublicId,
-      (
-        SELECT m.type FROM media m
-        WHERE m.listing_id = sp.listing_id
-        ORDER BY m.sort_order ASC
-        LIMIT 1
-      ) AS coverType
-    FROM sale_posts sp
-    JOIN users u ON sp.seller_id = u.user_id
-    WHERE sp.status = 'ACTIVE'
-      AND sp.product_type = 'BATTERY'
-    ORDER BY
-      CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
-      sp.priority_level DESC,
-      sp.created_at DESC
-    """,
+          (
+            SELECT ir.status
+            FROM inspection_reports ir
+            WHERE ir.listing_id = sp.listing_id
+            ORDER BY ir.created_at DESC
+            LIMIT 1
+          ) AS inspectionStatus,
+
+          (
+            SELECT m.public_id FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverPublicId,
+
+          (
+            SELECT m.type FROM media m
+            WHERE m.listing_id = sp.listing_id
+            ORDER BY m.sort_order ASC
+            LIMIT 1
+          ) AS coverType
+        FROM sale_posts sp
+        JOIN users u ON sp.seller_id = u.user_id
+        WHERE sp.status = 'ACTIVE'
+          AND sp.product_type = 'BATTERY'
+        ORDER BY
+          CASE WHEN sp.created_at >= NOW() - INTERVAL 3 DAY THEN 0 ELSE 1 END,
+          sp.priority_level DESC,
+          sp.created_at DESC
+        """,
             countQuery = """
-    SELECT COUNT(*)
-    FROM sale_posts sp
-    WHERE sp.status = 'ACTIVE'
-      AND sp.product_type = 'BATTERY'
-    """,
+        SELECT COUNT(*)
+        FROM sale_posts sp
+        WHERE sp.status = 'ACTIVE'
+          AND sp.product_type = 'BATTERY'
+        """,
             nativeQuery = true
     )
     Page<PostCardProjection> findBatteryPosts(Pageable pageable);
