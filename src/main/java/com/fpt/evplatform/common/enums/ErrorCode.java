@@ -57,6 +57,7 @@ public enum ErrorCode {
     FILE_TOO_LARGE(9001, "File is too large", HttpStatus.BAD_REQUEST),
     FILE_TYPE_NOT_ALLOWED(9002, "File type not allowed", HttpStatus.BAD_REQUEST),
     FILE_UPLOAD_FAILED(9003, "File upload failed", HttpStatus.BAD_REQUEST),
+    INVALID_REQUEST(1111, "Invalid Request", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

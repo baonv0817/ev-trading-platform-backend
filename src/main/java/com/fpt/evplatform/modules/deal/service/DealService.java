@@ -61,6 +61,13 @@ public class DealService {
 
     @Transactional
     public DealResponse assignPlatformSite(Integer dealId, DealRequest req) {
+        if (req.getPlatformSiteId() == null) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+        if (req.getScheduledAt() == null) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+
         Deal deal = dealRepository.findById(dealId)
                 .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
 
@@ -72,7 +79,8 @@ public class DealService {
         deal.setStatus(DealStatus.SCHEDULED);
         deal.setUpdatedAt(LocalDateTime.now());
 
-        return dealMapper.toResponse(dealRepository.save(deal));
+        dealRepository.save(deal);
+        return dealMapper.toResponse(deal);
     }
 
     @Transactional

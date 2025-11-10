@@ -32,7 +32,7 @@ public class Deal {
     DealStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "platform_site_id")
+    @JoinColumn(name = "platform_site_id", nullable = true)
     PlatformSite platformSite;
 
     LocalDateTime scheduledAt;

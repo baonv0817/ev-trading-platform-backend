@@ -57,7 +57,7 @@ public class OfferController {
                 .build();
     }
 
-    @Operation(summary = "View status of an Offer")
+    @Operation(summary = "Update status of an Offer")
     @PutMapping("/{offerId}/status")
     public ApiResponse<OfferResponse> updateOfferStatus(
             @PathVariable Integer offerId,
