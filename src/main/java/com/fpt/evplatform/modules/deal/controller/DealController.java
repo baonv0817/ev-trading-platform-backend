@@ -10,9 +10,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import com.fpt.evplatform.modules.deal.dto.response.CreateCheckoutResponse;
 import java.util.List;
 
 @RestController
@@ -101,6 +102,19 @@ public class DealController {
         return ApiResponse.<List<DealResponse>>builder()
                 .result(dealService.getDealsBySeller(sellerId))
                 .build();
+    }
+
+    // 2. Lấy URL thanh toán Stripe
+    @PostMapping("/{dealId}/checkout")
+    public ResponseEntity<CreateCheckoutResponse> createCheckout(@PathVariable Integer dealId) throws Exception {
+        return ResponseEntity.ok(dealService.createCheckout(dealId));
+    }
+
+
+    @PostMapping("/{dealId}/confirm")
+    public ResponseEntity<Void> confirmPayment(@PathVariable Integer dealId) {
+        dealService.confirmPayment(dealId);
+        return ResponseEntity.ok().build();
     }
 
 }

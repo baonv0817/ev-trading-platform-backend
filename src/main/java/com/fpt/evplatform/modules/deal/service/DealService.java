@@ -2,41 +2,60 @@ package com.fpt.evplatform.modules.deal.service;
 
 import com.fpt.evplatform.common.enums.DealStatus;
 import com.fpt.evplatform.common.enums.ErrorCode;
+import com.fpt.evplatform.common.enums.InspectionOrderStatus;
+import com.fpt.evplatform.common.enums.PaymentStatus;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.deal.dto.request.DealRequest;
+import com.fpt.evplatform.modules.deal.dto.response.CreateCheckoutResponse;
 import com.fpt.evplatform.modules.deal.dto.response.DealResponse;
 import com.fpt.evplatform.modules.deal.entity.Deal;
 import com.fpt.evplatform.modules.deal.mapper.DealMapper;
 import com.fpt.evplatform.modules.deal.repository.DealRepository;
+import com.fpt.evplatform.modules.escrow.entity.Escrow;
+import com.fpt.evplatform.modules.escrow.repository.EscrowRepository;
 import com.fpt.evplatform.modules.escrow.service.EscrowService;
+import com.fpt.evplatform.modules.inspectionorder.config.InspectionConstants;
+import com.fpt.evplatform.modules.inspectionorder.entity.InspectionOrder;
 import com.fpt.evplatform.modules.offer.entity.Offer;
 import com.fpt.evplatform.modules.offer.repository.OfferRepository;
 import com.fpt.evplatform.modules.platformsite.entity.PlatformSite;
 import com.fpt.evplatform.modules.platformsite.repository.PlatformSiteRepository;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+
 public class DealService {
 
-    DealRepository dealRepository;
-    DealMapper dealMapper;
-    OfferRepository offerRepository;
-    PlatformSiteRepository platformSiteRepository;
-    EscrowService escrowService;
-    UserRepository userRepository;
+    private final DealRepository dealRepository;
+    private final DealMapper dealMapper;
+    private final OfferRepository offerRepository;
+    private final PlatformSiteRepository platformSiteRepository;
+    private final EscrowRepository escrowRepository;
+    private final EscrowService escrowService;
+    private final UserRepository userRepository;
+
+    @Value("${app.checkout.success-url}") private String successUrl;
+    @Value("${app.checkout.cancel-url}")  private String cancelUrl;
+
 
     @Transactional
     public DealResponse createDeal(DealRequest req) {
@@ -156,5 +175,53 @@ public class DealService {
                 .map(dealMapper::toResponse)
                 .collect(Collectors.toList());
     }
+
+    public CreateCheckoutResponse createCheckout(Integer dealId) throws StripeException {
+        Escrow escrow = getEscrowByDealId(dealId);
+        long amount = escrow.getFeeAmount().longValueExact();
+        String currency = InspectionConstants.DEFAULT_CURRENCY.toLowerCase(Locale.ROOT);
+
+        SessionCreateParams params = com.stripe.param.checkout.SessionCreateParams.builder()
+                .setMode(com.stripe.param.checkout.SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl(successUrl)
+                .setCancelUrl(cancelUrl)
+                .addLineItem(
+                        SessionCreateParams.LineItem.builder()
+                                .setQuantity(1L)
+                                .setPriceData(
+                                        SessionCreateParams.LineItem.PriceData.builder()
+                                                .setCurrency(currency)
+                                                .setUnitAmount(amount)
+                                                .setProductData(
+                                                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                                .setName("Deal Order #" + dealId)
+                                                                .setDescription("Deal ID: " + dealId)
+                                                                .build()
+                                                )
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
+
+        Session session = Session.create(params);
+        return new CreateCheckoutResponse(session.getId(), session.getUrl());
+    }
+
+    // 3. FE gọi sau khi thanh toán thành công (Stripe redirect về)
+    @Transactional
+    public void confirmPayment(Integer dealId) {
+        Deal deal = dealRepository.findById(dealId)
+                .orElseThrow(() -> new IllegalArgumentException("Deal not found"));
+
+        deal.setStatus(DealStatus.SCHEDULED);
+        dealRepository.save(deal);
+    }
+
+    public Escrow getEscrowByDealId(Integer dealId) {
+        return escrowRepository.findByDeal_DealId(dealId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Escrow cho dealId = " + dealId));
+    }
+
 
 }
