@@ -104,7 +104,7 @@ public class DealController {
                 .build();
     }
 
-    // 2. Lấy URL thanh toán Stripe
+
     @PostMapping("/{dealId}/checkout")
     public ResponseEntity<CreateCheckoutResponse> createCheckout(@PathVariable Integer dealId) throws Exception {
         return ResponseEntity.ok(dealService.createCheckout(dealId));
