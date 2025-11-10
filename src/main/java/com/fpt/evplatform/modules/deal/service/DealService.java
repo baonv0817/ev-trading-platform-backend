@@ -19,6 +19,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -74,8 +76,11 @@ public class DealService {
         PlatformSite site = platformSiteRepository.findById(req.getPlatformSiteId())
                 .orElseThrow(() -> new AppException(ErrorCode.PLATFORM_SITE_NOT_FOUND));
 
+        LocalDateTime scheduledAt = OffsetDateTime.parse(req.getScheduledAt())
+                .toLocalDateTime();
+
         deal.setPlatformSite(site);
-        deal.setScheduledAt(LocalDateTime.parse(req.getScheduledAt()));
+        deal.setScheduledAt(scheduledAt);
         deal.setStatus(DealStatus.SCHEDULED);
         deal.setUpdatedAt(LocalDateTime.now());
 
