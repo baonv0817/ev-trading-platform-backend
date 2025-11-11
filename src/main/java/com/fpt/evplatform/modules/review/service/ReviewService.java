@@ -1,5 +1,6 @@
 package com.fpt.evplatform.modules.review.service;
 
+import com.fpt.evplatform.common.enums.DealStatus;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.deal.entity.Deal;
@@ -33,6 +34,10 @@ public class ReviewService {
     public ReviewResponse createReview(ReviewRequest req) {
         Deal deal = dealRepository.findById(req.getDealId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
+
+        if (deal.getStatus() != DealStatus.COMPLETED && deal.getStatus() != DealStatus.FAILED) {
+            throw new AppException(ErrorCode.DEAL_NOT_ELIGIBLE_FOR_REVIEW);
+        }
 
         User author = userRepository.findById(req.getAuthorId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

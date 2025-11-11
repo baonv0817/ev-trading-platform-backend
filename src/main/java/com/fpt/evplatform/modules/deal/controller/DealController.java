@@ -117,4 +117,10 @@ public class DealController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{dealId}/reject")
+    public ResponseEntity<Void> rejectPayment(@PathVariable Integer dealId) {
+        dealService.rejectPayment(dealId);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -214,6 +214,10 @@ public class DealService {
         Deal deal = dealRepository.findById(dealId)
                 .orElseThrow(() -> new IllegalArgumentException("Deal not found"));
 
+        if (deal.getStatus() != DealStatus.PENDING) {
+            throw new IllegalStateException("Only pending deals can be confirmed.");
+        }
+
         deal.setStatus(DealStatus.SCHEDULED);
         dealRepository.save(deal);
     }
@@ -222,6 +226,20 @@ public class DealService {
         return escrowRepository.findByDeal_DealId(dealId)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Escrow cho dealId = " + dealId));
     }
+
+    @Transactional
+    public void rejectPayment(Integer dealId) {
+        Deal deal = dealRepository.findById(dealId)
+                .orElseThrow(() -> new IllegalArgumentException("Deal not found"));
+
+        if (deal.getStatus() != DealStatus.PENDING) {
+            throw new IllegalStateException("Only pending deals can be rejected.");
+        }
+
+        deal.setStatus(DealStatus.FAILED);
+        dealRepository.save(deal);
+    }
+
 
 
 }
