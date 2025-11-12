@@ -35,7 +35,7 @@ public class ReviewService {
         Deal deal = dealRepository.findById(req.getDealId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
 
-        if (deal.getStatus() != DealStatus.COMPLETED && deal.getStatus() != DealStatus.FAILED) {
+        if (deal.getStatus() != DealStatus.COMPLETED && deal.getStatus() != DealStatus.CANCELLED) {
             throw new AppException(ErrorCode.DEAL_NOT_ELIGIBLE_FOR_REVIEW);
         }
 

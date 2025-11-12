@@ -21,4 +21,6 @@ public interface DealRepository extends JpaRepository<Deal,Integer> {
 
     @Query("SELECT d FROM Deal d WHERE d.offer.listing.seller = :seller")
     List<Deal> findBySeller(User seller);
+
+    boolean existsByOffer_Listing_ListingIdAndStatusIn(Integer listingId, List<DealStatus> statuses);
 }

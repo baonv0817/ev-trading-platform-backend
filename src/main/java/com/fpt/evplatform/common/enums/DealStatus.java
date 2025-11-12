@@ -1,9 +1,9 @@
 package com.fpt.evplatform.common.enums;
 
 public enum DealStatus {
-    PENDING,
+    INITIALIZED,
+    AWAITING_CONFIRMATION,
     COMPLETED,
-    FAILED,
     CANCELLED,
     SCHEDULED,
 }

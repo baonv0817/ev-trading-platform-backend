@@ -1,9 +1,6 @@
 package com.fpt.evplatform.modules.deal.service;
 
-import com.fpt.evplatform.common.enums.DealStatus;
-import com.fpt.evplatform.common.enums.ErrorCode;
-import com.fpt.evplatform.common.enums.InspectionOrderStatus;
-import com.fpt.evplatform.common.enums.PaymentStatus;
+import com.fpt.evplatform.common.enums.*;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.deal.dto.request.DealRequest;
 import com.fpt.evplatform.modules.deal.dto.response.CreateCheckoutResponse;
@@ -15,19 +12,18 @@ import com.fpt.evplatform.modules.escrow.entity.Escrow;
 import com.fpt.evplatform.modules.escrow.repository.EscrowRepository;
 import com.fpt.evplatform.modules.escrow.service.EscrowService;
 import com.fpt.evplatform.modules.inspectionorder.config.InspectionConstants;
-import com.fpt.evplatform.modules.inspectionorder.entity.InspectionOrder;
 import com.fpt.evplatform.modules.offer.entity.Offer;
 import com.fpt.evplatform.modules.offer.repository.OfferRepository;
 import com.fpt.evplatform.modules.platformsite.entity.PlatformSite;
 import com.fpt.evplatform.modules.platformsite.repository.PlatformSiteRepository;
+import com.fpt.evplatform.modules.salepost.entity.SalePost;
+import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +33,6 @@ import java.time.OffsetDateTime;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +47,7 @@ public class DealService {
     private final EscrowRepository escrowRepository;
     private final EscrowService escrowService;
     private final UserRepository userRepository;
+    private final SalePostRepository salePostRepository;
 
     @Value("${app.checkout.success-url}") private String successUrl;
     @Value("${app.checkout.cancel-url}")  private String cancelUrl;
@@ -62,13 +58,26 @@ public class DealService {
         Offer offer = offerRepository.findById(req.getOfferId())
                 .orElseThrow(() -> new AppException(ErrorCode.OFFER_NOT_FOUND));
 
+        if (offer.getStatus() != OfferStatus.ACCEPTED) {
+            throw new AppException(ErrorCode.OFFER_NOT_ACCEPTED);
+        }
+
         if (dealRepository.findByOffer(offer).isPresent()) {
             throw new AppException(ErrorCode.DEAL_ALREADY_EXISTS);
         }
 
+        boolean hasClosedDeal = dealRepository.existsByOffer_Listing_ListingIdAndStatusIn(
+                offer.getListing().getListingId(),
+                List.of(DealStatus.SCHEDULED, DealStatus.COMPLETED)
+        );
+
+        if (hasClosedDeal) {
+            throw new AppException(ErrorCode.LISTING_UNAVAILABLE);
+        }
+
         Deal deal = Deal.builder()
                 .offer(offer)
-                .status(DealStatus.PENDING)
+                .status(DealStatus.INITIALIZED)
                 .balanceDue(offer.getProposedPrice())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -95,11 +104,16 @@ public class DealService {
         PlatformSite site = platformSiteRepository.findById(req.getPlatformSiteId())
                 .orElseThrow(() -> new AppException(ErrorCode.PLATFORM_SITE_NOT_FOUND));
 
-        LocalDateTime scheduledAt = OffsetDateTime.parse(req.getScheduledAt())
-                .toLocalDateTime();
+        LocalDateTime scheduledAt;
+        try {
+            scheduledAt = OffsetDateTime.parse(req.getScheduledAt()).toLocalDateTime();
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.INVALID_DATE_FORMAT);
+        }
 
         deal.setPlatformSite(site);
         deal.setScheduledAt(scheduledAt);
+        deal.setStatus(DealStatus.AWAITING_CONFIRMATION);
         deal.setUpdatedAt(LocalDateTime.now());
 
         dealRepository.save(deal);
@@ -114,6 +128,10 @@ public class DealService {
         deal.setStatus(DealStatus.COMPLETED);
         deal.setUpdatedAt(LocalDateTime.now());
         dealRepository.save(deal);
+
+        SalePost listing = deal.getOffer().getListing();
+        listing.setStatus(PostStatus.SOLD);
+        salePostRepository.save(listing);
 
         escrowService.releaseEscrow(deal.getDealId());
 
@@ -213,29 +231,30 @@ public class DealService {
         Deal deal = dealRepository.findById(dealId)
                 .orElseThrow(() -> new IllegalArgumentException("Deal not found"));
 
-        if (deal.getStatus() != DealStatus.PENDING) {
-            throw new IllegalStateException("Only pending deals can be confirmed.");
+        if (deal.getStatus() != DealStatus.AWAITING_CONFIRMATION) {
+            throw new AppException(ErrorCode.INVALID_STATUS_TRANSITION);
         }
 
         deal.setStatus(DealStatus.SCHEDULED);
+        deal.setUpdatedAt(LocalDateTime.now());
         dealRepository.save(deal);
     }
 
     public Escrow getEscrowByDealId(Integer dealId) {
         return escrowRepository.findByDeal_DealId(dealId)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Escrow cho dealId = " + dealId));
+                .orElseThrow(() -> new AppException(ErrorCode.ESCROW_NOT_FOUND));
     }
 
     @Transactional
     public void rejectPayment(Integer dealId) {
         Deal deal = dealRepository.findById(dealId)
-                .orElseThrow(() -> new IllegalArgumentException("Deal not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
 
-        if (deal.getStatus() != DealStatus.PENDING) {
-            throw new IllegalStateException("Only pending deals can be rejected.");
+        if (deal.getStatus() != DealStatus.AWAITING_CONFIRMATION && deal.getStatus() != DealStatus.INITIALIZED) {
+            throw new AppException(ErrorCode.INVALID_STATUS_TRANSITION);
         }
 
-        deal.setStatus(DealStatus.FAILED);
+        deal.setStatus(DealStatus.CANCELLED);
         dealRepository.save(deal);
     }
 
