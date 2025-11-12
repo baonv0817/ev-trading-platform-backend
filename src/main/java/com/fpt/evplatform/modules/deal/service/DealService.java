@@ -49,8 +49,8 @@ public class DealService {
     private final UserRepository userRepository;
     private final SalePostRepository salePostRepository;
 
-    @Value("${app.checkout.success-url}") private String successUrl;
-    @Value("${app.checkout.cancel-url}")  private String cancelUrl;
+    @Value("${app.deal.success-url}") private String successUrl;
+    @Value("${app.deal.cancel-url}")  private String cancelUrl;
 
 
     @Transactional

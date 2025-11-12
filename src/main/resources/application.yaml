@@ -47,6 +47,9 @@ app:
   checkout:
     success-url: "http://localhost:5173/inspectionCheckout/success?success=true"
     cancel-url: "http://localhost:5173/inspectionCheckout/success?success=false"
+  deal:
+    success-url: "http://localhost:5173/dealCheckout/success?success=true"
+    cancel-url: "http://localhost:5173/dealCheckout/success?success=false"
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
