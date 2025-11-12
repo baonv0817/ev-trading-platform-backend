@@ -3,6 +3,7 @@ package com.fpt.evplatform.modules.offer.service;
 import com.fpt.evplatform.common.enums.DealStatus;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.common.enums.OfferStatus;
+import com.fpt.evplatform.common.enums.PostStatus;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.deal.dto.request.DealRequest;
 import com.fpt.evplatform.modules.deal.dto.response.DealResponse;
@@ -110,6 +111,10 @@ public class OfferService {
 
             offer.setStatus(OfferStatus.ACCEPTED);
             offerRepository.save(offer);
+
+            SalePost listing = offer.getListing();
+            listing.setStatus(PostStatus.HIDDEN);
+            salePostRepository.save(listing);
 
             DealRequest dealReq = new DealRequest();
             dealReq.setOfferId(offerId);

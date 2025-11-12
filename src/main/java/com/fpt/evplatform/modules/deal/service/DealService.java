@@ -161,6 +161,10 @@ public class DealService {
 
         if (status == DealStatus.CANCELLED) {
             escrowService.cancelEscrow(deal.getDealId());
+
+            SalePost listing = deal.getOffer().getListing();
+            listing.setStatus(PostStatus.ACTIVE);
+            salePostRepository.save(listing);
         }
 
         return dealMapper.toResponse(deal);
@@ -256,6 +260,10 @@ public class DealService {
 
         deal.setStatus(DealStatus.CANCELLED);
         dealRepository.save(deal);
+
+        SalePost listing = deal.getOffer().getListing();
+        listing.setStatus(PostStatus.ACTIVE);
+        salePostRepository.save(listing);
     }
 
 
