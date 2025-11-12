@@ -35,7 +35,7 @@ public class DealController {
                 .build();
     }
 
-    @Operation(summary = "Assign a platform site and schedule a deal")
+    @Operation(summary = "Assign a platform site and schedule a deal (still PENDING)")
     @PutMapping("/{dealId}/assign-site")
     public ApiResponse<DealResponse> assignSite(@PathVariable Integer dealId, @RequestBody DealRequest req) {
         return ApiResponse.<DealResponse>builder()
@@ -104,19 +104,20 @@ public class DealController {
                 .build();
     }
 
-
+    @Operation(summary = "Create a checkout session for the deal (payment initialization)")
     @PostMapping("/{dealId}/checkout")
     public ResponseEntity<CreateCheckoutResponse> createCheckout(@PathVariable Integer dealId) throws Exception {
         return ResponseEntity.ok(dealService.createCheckout(dealId));
     }
 
-
+    @Operation(summary = "Confirm payment for the deal (after successful checkout)")
     @PostMapping("/{dealId}/confirm")
     public ResponseEntity<Void> confirmPayment(@PathVariable Integer dealId) {
         dealService.confirmPayment(dealId);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Reject the payment for the deal")
     @PostMapping("/{dealId}/reject")
     public ResponseEntity<Void> rejectPayment(@PathVariable Integer dealId) {
         dealService.rejectPayment(dealId);

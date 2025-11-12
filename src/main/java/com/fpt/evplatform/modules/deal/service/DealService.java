@@ -100,7 +100,6 @@ public class DealService {
 
         deal.setPlatformSite(site);
         deal.setScheduledAt(scheduledAt);
-        deal.setStatus(DealStatus.SCHEDULED);
         deal.setUpdatedAt(LocalDateTime.now());
 
         dealRepository.save(deal);
