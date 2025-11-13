@@ -3,7 +3,6 @@ package com.fpt.evplatform.modules.ai.service;
 import com.fpt.evplatform.common.enums.ProductType;
 import com.fpt.evplatform.modules.ai.dto.request.AiPriceRequest;
 import com.fpt.evplatform.modules.ai.dto.response.AiPriceResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
