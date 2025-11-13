@@ -27,7 +27,7 @@ public class EscrowService {
     EscrowRepository escrowRepository;
     EscrowMapper escrowMapper;
 
-    private static final BigDecimal DEFAULT_RATE = BigDecimal.valueOf(5.0); // 5% fee
+    private static final BigDecimal DEFAULT_RATE = BigDecimal.valueOf(1.0); // 1% fee
 
 
     @Transactional

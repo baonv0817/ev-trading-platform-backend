@@ -15,7 +15,7 @@ public interface DealMapper {
     @Mapping(target = "offer", source = "offer")
     @Mapping(target = "platformSite", source = "platformSite")
     @Mapping(target = "balanceDue", source = "req.balanceDue")
-    @Mapping(target = "status", expression = "java(com.fpt.evplatform.common.enums.DealStatus.PENDING)")
+    @Mapping(target = "status", expression = "java(com.fpt.evplatform.common.enums.DealStatus.INITIALIZED)")
     @Mapping(target = "scheduledAt",
             expression = "java(req.getScheduledAt() != null ? java.time.LocalDateTime.parse(req.getScheduledAt()) : null)")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")

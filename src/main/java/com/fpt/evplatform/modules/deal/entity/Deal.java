@@ -41,7 +41,7 @@ public class Deal {
 
     @PrePersist
     protected void onCreate() {
-        if (status == null) status = DealStatus.PENDING;
+        if (status == null) status = DealStatus.INITIALIZED;
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
