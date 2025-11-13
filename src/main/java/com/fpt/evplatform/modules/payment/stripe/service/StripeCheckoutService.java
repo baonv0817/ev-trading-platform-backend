@@ -36,14 +36,16 @@ public class StripeCheckoutService {
         MembershipPlan plan = planRepo.findByName(planName)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
+        if(user.getPlanStatus().equalsIgnoreCase("ACTIVE")) {
+            throw new AppException(ErrorCode.USER_HAD_MEMBERSHIP);
+        }
 
-        long amount = plan.getPrice().longValueExact(); // VND zero-decimal
+        long amount = plan.getPrice().longValueExact();
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(successUrl) // phải chứa {CHECKOUT_SESSION_ID}
+                .setSuccessUrl(successUrl)
                 .setCancelUrl(cancelUrl)
-                // Line item theo giá hiện tại của plan
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(1L)
@@ -60,7 +62,6 @@ public class StripeCheckoutService {
                                 )
                                 .build()
                 )
-                // Nhúng metadata vào PaymentIntent để verify khi activate
                 .setPaymentIntentData(
                         SessionCreateParams.PaymentIntentData.builder()
                                 .putMetadata("userId", String.valueOf(user.getUserId()))

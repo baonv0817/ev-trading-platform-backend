@@ -34,7 +34,7 @@ public enum ErrorCode {
     SALE_POST_MEMBERSHIP_REQUIRED(2003, "You must have an active membership plan to create a sale post", HttpStatus.FORBIDDEN),
     SALE_POST_PLAN_EXPIRED(2004, "Your membership plan has expired", HttpStatus.FORBIDDEN),
     SALE_POST_LIMIT_REACHED(2005, "You have reached the maximum number of sale posts allowed for your plan", HttpStatus.BAD_REQUEST),
-
+    USER_HAD_MEMBERSHIP(2006, "You already had a membership plan", HttpStatus.BAD_REQUEST),
     // ==================================================
     // 🔹 PAYMENT / STRIPE ERRORS (3000–3099)
     // ==================================================

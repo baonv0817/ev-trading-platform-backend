@@ -32,6 +32,7 @@ public class UserResponse {
     String avatarThumbUrl;
     MembershipPlanResponse plan;
     String planStatus;
+    Integer quotaRemaining;
     LocalDateTime startAt;
     LocalDateTime endAt;
     LocalDateTime createdAt;

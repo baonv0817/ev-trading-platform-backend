@@ -14,12 +14,5 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VehiclePostService {
     VehiclePostRepository vehiclePostRepository;
-
-//    public VehiclePost save(VehiclePost vehicle){
-//
-//    }
-//
-//    public VehiclePost getById(Long id){
-//
-//    }
+    
 }

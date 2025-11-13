@@ -39,7 +39,7 @@ public class UserService {
     MembershipPlanRepository membershipPlanRepository;
     SalePostRepository salePostRepository;
     Cloudinary cloudinary;
-
+    SalePostRepository saleRepo;
 
     public UserResponse createUser(UserCreationRequest request, String role){
         if (userRepository.existsByUsername(request.getUsername()))
@@ -78,7 +78,16 @@ public class UserService {
         User user = userRepository.findByUsername(name).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
+
+        Integer used = saleRepo.countBySeller_UserIdAndCreatedAtBetween(
+                user.getUserId(), user.getStartAt(), user.getEndAt()
+        );
+        Integer maxPosts = user.getPlan().getMaxPosts();
+        Integer remaningPosts = maxPosts - used;
+
         UserResponse dto = userMapper.toUserResponse(user);
+
+        dto.setQuotaRemaining(remaningPosts);
 
         if (user.getAvatarPublicId() != null) {
             String thumbUrl = cloudinary.url()

@@ -52,7 +52,6 @@ public class SalePostService {
             throw new AppException(ErrorCode.SALE_POST_PLAN_EXPIRED);
         }
 
-        // 3) Check quota bài đăng trong kỳ [start_at, end_at]
         Integer used = saleRepo.countBySeller_UserIdAndCreatedAtBetween(
                 user.getUserId(), user.getStartAt(), user.getEndAt()
         );
@@ -61,7 +60,6 @@ public class SalePostService {
             throw new AppException(ErrorCode.SALE_POST_LIMIT_REACHED);
         }
 
-        // 4) Snapshot priority từ plan
         Integer priority = user.getPlan().getPriorityLevel() == null ? 0 : user.getPlan().getPriorityLevel();
 
 

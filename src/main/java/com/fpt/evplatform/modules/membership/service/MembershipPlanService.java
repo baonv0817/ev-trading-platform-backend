@@ -78,8 +78,6 @@ public class MembershipPlanService {
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
         Integer duration = plan.getDurationDays();
-
-        // Nếu user còn hạn, nối tiếp thời gian
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime baseTime = now;
         if (user.getEndAt() != null && user.getEndAt().isAfter(now)) {
@@ -96,7 +94,6 @@ public class MembershipPlanService {
 
         userRepo.save(user);
 
-        // 👉 Build response
         UserPlanResponse response = new UserPlanResponse();
         response.setPlanId(plan.getPlanId());
         response.setPlanName(plan.getName());
