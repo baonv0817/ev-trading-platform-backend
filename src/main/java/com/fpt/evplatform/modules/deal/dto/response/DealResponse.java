@@ -1,6 +1,7 @@
 package com.fpt.evplatform.modules.deal.dto.response;
 
 import com.fpt.evplatform.common.enums.DealStatus;
+import com.fpt.evplatform.modules.user.dto.SimpleUserDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -21,4 +22,7 @@ public class DealResponse {
     LocalDateTime scheduledAt;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+    SimpleUserDTO buyer;
+    SimpleUserDTO seller;
+    Integer listingId;
 }

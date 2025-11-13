@@ -159,16 +159,25 @@ public class DealService {
         deal.setUpdatedAt(LocalDateTime.now());
         dealRepository.save(deal);
 
-        if (status == DealStatus.CANCELLED) {
-            escrowService.cancelEscrow(deal.getDealId());
-
-            SalePost listing = deal.getOffer().getListing();
-            listing.setStatus(PostStatus.ACTIVE);
-            salePostRepository.save(listing);
+        switch (status) {
+            case CANCELLED, BUYER_NO_SHOW, SELLER_NO_SHOW -> {
+                escrowService.cancelEscrow(deal.getDealId());
+                SalePost listing = deal.getOffer().getListing();
+                listing.setStatus(PostStatus.ACTIVE);
+                salePostRepository.save(listing);
+            }
+            case COMPLETED -> {
+                escrowService.releaseEscrow(deal.getDealId());
+                SalePost listing = deal.getOffer().getListing();
+                listing.setStatus(PostStatus.SOLD);
+                salePostRepository.save(listing);
+            }
+            default -> {}
         }
 
         return dealMapper.toResponse(deal);
     }
+
 
     public void deleteDeal(Integer id) {
         if (!dealRepository.existsById(id)) {

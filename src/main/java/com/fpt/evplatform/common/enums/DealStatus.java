@@ -6,4 +6,6 @@ public enum DealStatus {
     COMPLETED,
     CANCELLED,
     SCHEDULED,
+    BUYER_NO_SHOW,
+    SELLER_NO_SHOW
 }
