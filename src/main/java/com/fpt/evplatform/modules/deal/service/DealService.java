@@ -27,6 +27,8 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 
@@ -37,7 +39,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
 public class DealService {
 
     private final DealRepository dealRepository;
@@ -52,9 +53,9 @@ public class DealService {
     @Value("${app.deal.success-url}") private String successUrl;
     @Value("${app.deal.cancel-url}")  private String cancelUrl;
 
-
     @Transactional
     public DealResponse createDeal(DealRequest req) {
+
         Offer offer = offerRepository.findById(req.getOfferId())
                 .orElseThrow(() -> new AppException(ErrorCode.OFFER_NOT_FOUND));
 
@@ -71,9 +72,7 @@ public class DealService {
                 List.of(DealStatus.SCHEDULED, DealStatus.COMPLETED)
         );
 
-        if (hasClosedDeal) {
-            throw new AppException(ErrorCode.LISTING_UNAVAILABLE);
-        }
+        if (hasClosedDeal) throw new AppException(ErrorCode.LISTING_UNAVAILABLE);
 
         Deal deal = Deal.builder()
                 .offer(offer)
@@ -86,15 +85,13 @@ public class DealService {
         dealRepository.save(deal);
         escrowService.createEscrowForDeal(deal);
 
-        return dealMapper.toResponse(deal);
+        return enrichDealResponse(deal, dealMapper.toResponse(deal));
     }
 
     @Transactional
     public DealResponse assignPlatformSite(Integer dealId, DealRequest req) {
-        if (req.getPlatformSiteId() == null) {
-            throw new AppException(ErrorCode.INVALID_REQUEST);
-        }
-        if (req.getScheduledAt() == null) {
+
+        if (req.getPlatformSiteId() == null || req.getScheduledAt() == null) {
             throw new AppException(ErrorCode.INVALID_REQUEST);
         }
 
@@ -115,13 +112,14 @@ public class DealService {
         deal.setScheduledAt(scheduledAt);
         deal.setStatus(DealStatus.AWAITING_CONFIRMATION);
         deal.setUpdatedAt(LocalDateTime.now());
-
         dealRepository.save(deal);
-        return dealMapper.toResponse(deal);
+
+        return enrichDealResponse(deal, dealMapper.toResponse(deal));
     }
 
     @Transactional
     public DealResponse completeDeal(Integer dealId) {
+
         Deal deal = dealRepository.findById(dealId)
                 .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
 
@@ -135,23 +133,24 @@ public class DealService {
 
         escrowService.releaseEscrow(deal.getDealId());
 
-        return dealMapper.toResponse(deal);
+        return enrichDealResponse(deal, dealMapper.toResponse(deal));
     }
 
     public List<DealResponse> getAllDeals() {
         return dealRepository.findAll().stream()
-                .map(dealMapper::toResponse)
+                .map(d -> enrichDealResponse(d, dealMapper.toResponse(d)))
                 .collect(Collectors.toList());
     }
 
     public List<DealResponse> getDealsByStatus(DealStatus status) {
         return dealRepository.findByStatus(status).stream()
-                .map(dealMapper::toResponse)
+                .map(d -> enrichDealResponse(d, dealMapper.toResponse(d)))
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public DealResponse updateStatus(Integer dealId, DealStatus status) {
+
         Deal deal = dealRepository.findById(dealId)
                 .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
 
@@ -175,44 +174,47 @@ public class DealService {
             default -> {}
         }
 
-        return dealMapper.toResponse(deal);
+        return enrichDealResponse(deal, dealMapper.toResponse(deal));
     }
 
-
     public void deleteDeal(Integer id) {
-        if (!dealRepository.existsById(id)) {
+        if (!dealRepository.existsById(id))
             throw new AppException(ErrorCode.DEAL_NOT_FOUND);
-        }
+
         dealRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public List<DealResponse> getDealsByBuyer(Integer buyerId) {
+
         User buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return dealRepository.findByBuyer(buyer).stream()
-                .map(dealMapper::toResponse)
+                .map(d -> enrichDealResponse(d, dealMapper.toResponse(d)))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<DealResponse> getDealsBySeller(Integer sellerId) {
+
         User seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return dealRepository.findBySeller(seller).stream()
-                .map(dealMapper::toResponse)
+                .map(d -> enrichDealResponse(d, dealMapper.toResponse(d)))
                 .collect(Collectors.toList());
     }
 
     public CreateCheckoutResponse createCheckout(Integer dealId) throws StripeException {
+
         Escrow escrow = getEscrowByDealId(dealId);
+
         long amount = escrow.getFeeAmount().longValueExact();
         String currency = InspectionConstants.DEFAULT_CURRENCY.toLowerCase(Locale.ROOT);
 
-        SessionCreateParams params = com.stripe.param.checkout.SessionCreateParams.builder()
-                .setMode(com.stripe.param.checkout.SessionCreateParams.Mode.PAYMENT)
+        SessionCreateParams params = SessionCreateParams.builder()
+                .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(successUrl)
                 .setCancelUrl(cancelUrl)
                 .addLineItem(
@@ -238,11 +240,11 @@ public class DealService {
         return new CreateCheckoutResponse(session.getId(), session.getUrl());
     }
 
-    // 3. FE gọi sau khi thanh toán thành công (Stripe redirect về)
     @Transactional
     public void confirmPayment(Integer dealId) {
+
         Deal deal = dealRepository.findById(dealId)
-                .orElseThrow(() -> new IllegalArgumentException("Deal not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
 
         if (deal.getStatus() != DealStatus.AWAITING_CONFIRMATION) {
             throw new AppException(ErrorCode.INVALID_STATUS_TRANSITION);
@@ -253,17 +255,14 @@ public class DealService {
         dealRepository.save(deal);
     }
 
-    public Escrow getEscrowByDealId(Integer dealId) {
-        return escrowRepository.findByDeal_DealId(dealId)
-                .orElseThrow(() -> new AppException(ErrorCode.ESCROW_NOT_FOUND));
-    }
-
     @Transactional
     public void rejectPayment(Integer dealId) {
+
         Deal deal = dealRepository.findById(dealId)
                 .orElseThrow(() -> new AppException(ErrorCode.DEAL_NOT_FOUND));
 
-        if (deal.getStatus() != DealStatus.AWAITING_CONFIRMATION && deal.getStatus() != DealStatus.INITIALIZED) {
+        if (!(deal.getStatus() == DealStatus.AWAITING_CONFIRMATION
+                || deal.getStatus() == DealStatus.INITIALIZED)) {
             throw new AppException(ErrorCode.INVALID_STATUS_TRANSITION);
         }
 
@@ -275,6 +274,30 @@ public class DealService {
         salePostRepository.save(listing);
     }
 
+    public Escrow getEscrowByDealId(Integer dealId) {
+        return escrowRepository.findByDeal_DealId(dealId)
+                .orElseThrow(() -> new AppException(ErrorCode.ESCROW_NOT_FOUND));
+    }
 
+    private DealResponse enrichDealResponse(Deal deal, DealResponse resp) {
+
+        Escrow escrow = escrowRepository.findByDeal_DealId(deal.getDealId())
+                .orElse(null);
+
+        if (escrow != null) {
+            resp.setFeeAmount(escrow.getFeeAmount());
+
+            resp.setSellerReceiveAmount(
+                    deal.getBalanceDue().subtract(escrow.getFeeAmount())
+            );
+
+        } else {
+            resp.setFeeAmount(BigDecimal.ZERO);
+            resp.setSellerReceiveAmount(deal.getBalanceDue());
+        }
+
+        return resp;
+    }
 
 }
+

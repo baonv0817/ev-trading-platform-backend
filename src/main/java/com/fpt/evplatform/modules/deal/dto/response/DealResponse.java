@@ -5,6 +5,7 @@ import com.fpt.evplatform.modules.user.dto.SimpleUserDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,7 +18,7 @@ public class DealResponse {
     Integer offerId;
     Integer platformSiteId;
     String platformSiteName;
-    Double balanceDue;
+    BigDecimal balanceDue;
     String status;
     LocalDateTime scheduledAt;
     LocalDateTime createdAt;
@@ -25,4 +26,6 @@ public class DealResponse {
     SimpleUserDTO buyer;
     SimpleUserDTO seller;
     Integer listingId;
+    BigDecimal feeAmount;
+    BigDecimal sellerReceiveAmount;
 }
