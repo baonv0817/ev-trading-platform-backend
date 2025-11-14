@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface VehiclePostRepository extends JpaRepository<VehiclePost, Integer> {
     List<VehiclePost> findByModel(Model model);
-
+    boolean existsByVin(String vin);
 }

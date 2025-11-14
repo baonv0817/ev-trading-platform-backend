@@ -17,6 +17,7 @@ import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
 import com.fpt.evplatform.modules.vehiclepost.entity.VehiclePost;
+import com.fpt.evplatform.modules.vehiclepost.repository.VehiclePostRepository;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -39,6 +41,36 @@ public class SalePostService {
     ModelRepository modelRepo;
     MediaService mediaService;
     SalePostQueryService salePostQueryService;
+    VehiclePostRepository vehiclePostRepo;
+
+    private static final int MIN_YEAR = 1900;
+    private static final int MAX_YEAR = LocalDate.now().getYear() + 1;
+    private static final long MAX_ODO_KM = 1_500_000L;
+    private void validateVehicleDetail(CreatePostRequest.VehicleDetail v) {
+        if (v == null) throw new AppException(ErrorCode.VEHICLE_DETAIL_REQUIRED);
+
+        if (v.getYear() == null) throw new AppException(ErrorCode.VEHICLE_YEAR_REQUIRED);
+        if (v.getYear() < MIN_YEAR || v.getYear() > MAX_YEAR) {
+            throw new AppException(ErrorCode.VEHICLE_YEAR_INVALID);
+        }
+
+        if (v.getOdoKm() == null) throw new AppException(ErrorCode.VEHICLE_ODO_REQUIRED);
+        if (v.getOdoKm() < 0 || v.getOdoKm() > MAX_ODO_KM) {
+            throw new AppException(ErrorCode.VEHICLE_ODO_INVALID);
+        }
+
+        if (v.getSeatCount() == null || v.getSeatCount() < 1) {
+            throw new AppException(ErrorCode.VEHICLE_SEAT_COUNT_INVALID);
+        }
+
+        String vin = v.getVin();
+        if (vin != null && !vin.isBlank()) {
+            String cleaned = vin.trim();
+            if (cleaned.length() != 17) {
+                throw new AppException(ErrorCode.VEHICLE_VIN_INVALID);
+            }
+        }
+    }
 
     @Transactional
     public PostResponse createPost(String username, CreatePostRequest req, @Nullable List<MultipartFile> files) {
@@ -103,23 +135,37 @@ public class SalePostService {
             post.setBatteryPost(bp);
         }
         else {
-           var d = req.getVehicle();
-           Model model = modelRepo.findById(d.getModelId())
-                   .orElseThrow(() -> new AppException(ErrorCode.MODEL_NOT_FOUND));
-           VehiclePost vp = VehiclePost.builder()
-                     .model(model)
-                     .year(d.getYear())
-                     .odoKm(d.getOdoKm())
-                     .vin(d.getVin())
-                     .transmission(d.getTransmission())
-                     .fuelType(d.getFuelType())
-                     .origin(d.getOrigin())
-                     .bodyStyle(d.getBodyStyle())
-                     .seatCount(d.getSeatCount())
-                     .color(d.getColor())
-                     .accessories(d.isAccessories())
-                     .registration(d.isRegistration())
-                     .build();
+            var d = req.getVehicle();
+
+            // -------------- VALIDATIONS --------------
+            validateVehicleDetail(d);
+
+            // VIN uniqueness check (if VIN provided)
+            if (d.getVin() != null && !d.getVin().isBlank()) {
+                String vin = d.getVin().trim();
+                if (vehiclePostRepo.existsByVin(vin)) {
+                    throw new AppException(ErrorCode.VEHICLE_VIN_DUPLICATE);
+                }
+            }
+
+            // model existence
+            Model model = modelRepo.findById(d.getModelId())
+                    .orElseThrow(() -> new AppException(ErrorCode.MODEL_NOT_FOUND));
+
+            VehiclePost vp = VehiclePost.builder()
+                    .model(model)
+                    .year(d.getYear())
+                    .odoKm(d.getOdoKm())
+                    .vin(d.getVin() != null ? d.getVin().trim() : null)
+                    .transmission(d.getTransmission())
+                    .fuelType(d.getFuelType())
+                    .origin(d.getOrigin())
+                    .bodyStyle(d.getBodyStyle())
+                    .seatCount(d.getSeatCount())
+                    .color(d.getColor())
+                    .accessories(d.isAccessories())
+                    .registration(d.isRegistration())
+                    .build();
             post.setVehiclePost(vp);
         }
         // 8) Lưu tất cả

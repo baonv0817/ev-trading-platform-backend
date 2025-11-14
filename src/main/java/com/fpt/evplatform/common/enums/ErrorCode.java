@@ -18,6 +18,7 @@ public enum ErrorCode {
     UNAUTHORIZED_ACTION(1006, "Unauthorized action", HttpStatus.UNAUTHORIZED),
     BAD_REQUEST(1007, "Bad request", HttpStatus.BAD_REQUEST),
 
+
     // ==================================================
     // 🔹 USER ERRORS (1100–1199)
     // ==================================================
@@ -51,7 +52,13 @@ public enum ErrorCode {
     VEHICLE_DETAIL_REQUIRED(4102, "Vehicle detail is required for VEHICLE product type", HttpStatus.BAD_REQUEST),
     BATTERY_DETAIL_MUST_BE_NULL(4103, "Battery detail must be null for VEHICLE product type", HttpStatus.BAD_REQUEST),
     VEHICLE_DETAIL_MUST_BE_NULL(4104, "Vehicle detail must be null for BATTERY product type", HttpStatus.BAD_REQUEST),
-
+    VEHICLE_YEAR_REQUIRED(4105, "Vehicle year is required for VEHICLE year", HttpStatus.BAD_REQUEST),
+    VEHICLE_YEAR_INVALID(4106, "Vehicle year is invalid", HttpStatus.BAD_REQUEST),
+    VEHICLE_ODO_REQUIRED(4107, "Odo is required for VEHICLE ODO", HttpStatus.BAD_REQUEST),
+    VEHICLE_ODO_INVALID(4018,"Vehicle ODO is invalid", HttpStatus.BAD_REQUEST),
+    VEHICLE_SEAT_COUNT_INVALID(4109, "Vehicle seatcount is invalid", HttpStatus.BAD_REQUEST),
+    VEHICLE_VIN_INVALID(4110,"Vehicle vin is invalid", HttpStatus.BAD_REQUEST),
+    VEHICLE_VIN_DUPLICATE(4111,"Vehicle vin already exists", HttpStatus.BAD_REQUEST),
     // ==================================================
     // 🔹 BRAND / MODEL / LISTING ERRORS (5000–5099)
     // ==================================================
