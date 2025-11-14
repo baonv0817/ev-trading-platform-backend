@@ -36,7 +36,8 @@ public class StripeCheckoutService {
         MembershipPlan plan = planRepo.findByName(planName)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
-        if(user.getPlanStatus().equalsIgnoreCase("ACTIVE")) {
+        if ("ACTIVE".equalsIgnoreCase(user.getPlanStatus())
+                && !"FREE".equalsIgnoreCase(user.getPlan().getName())) {
             throw new AppException(ErrorCode.USER_HAD_MEMBERSHIP);
         }
 
