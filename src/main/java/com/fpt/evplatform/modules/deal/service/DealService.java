@@ -14,6 +14,9 @@ import com.fpt.evplatform.modules.escrow.service.EscrowService;
 import com.fpt.evplatform.modules.inspectionorder.config.InspectionConstants;
 import com.fpt.evplatform.modules.offer.entity.Offer;
 import com.fpt.evplatform.modules.offer.repository.OfferRepository;
+import com.fpt.evplatform.modules.payment.transaction.entity.Transaction;
+import com.fpt.evplatform.modules.payment.transaction.repository.TransactionRepository;
+import com.fpt.evplatform.modules.payment.transaction.service.TransactionService;
 import com.fpt.evplatform.modules.platformsite.entity.PlatformSite;
 import com.fpt.evplatform.modules.platformsite.repository.PlatformSiteRepository;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
@@ -49,6 +52,10 @@ public class DealService {
     private final EscrowService escrowService;
     private final UserRepository userRepository;
     private final SalePostRepository salePostRepository;
+    private final TransactionService transactionService;
+    private final TransactionRepository transactionRepository;
+
+    private static final BigDecimal DEFAULT_RATE = BigDecimal.valueOf(1.0);
 
     @Value("${app.deal.success-url}") private String successUrl;
     @Value("${app.deal.cancel-url}")  private String cancelUrl;
@@ -159,8 +166,26 @@ public class DealService {
         dealRepository.save(deal);
 
         switch (status) {
-            case CANCELLED, BUYER_NO_SHOW, SELLER_NO_SHOW -> {
+            case CANCELLED, BUYER_NO_SHOW -> {
                 escrowService.cancelEscrow(deal.getDealId());
+
+                SalePost listing = deal.getOffer().getListing();
+                listing.setStatus(PostStatus.ACTIVE);
+                salePostRepository.save(listing);
+            }
+
+            case SELLER_NO_SHOW -> {
+                escrowService.cancelEscrow(deal.getDealId());
+                BigDecimal fee = deal.getBalanceDue()
+                        .multiply(DEFAULT_RATE)
+                        .divide(BigDecimal.valueOf(100));
+
+                transactionService.recordRefund(
+                        deal.getOffer().getBuyer().getUserId(),
+                        deal.getDealId(),
+                        "DEAL",
+                        fee.longValueExact()
+                );
                 SalePost listing = deal.getOffer().getListing();
                 listing.setStatus(PostStatus.ACTIVE);
                 salePostRepository.save(listing);
@@ -176,6 +201,7 @@ public class DealService {
 
         return enrichDealResponse(deal, dealMapper.toResponse(deal));
     }
+
 
     public void deleteDeal(Integer id) {
         if (!dealRepository.existsById(id))
@@ -250,8 +276,22 @@ public class DealService {
             throw new AppException(ErrorCode.INVALID_STATUS_TRANSITION);
         }
 
+
+        BigDecimal fee = deal.getBalanceDue()
+                .multiply(DEFAULT_RATE)
+                .divide(BigDecimal.valueOf(100));
+
+        transactionService.recordPayment(
+                deal.getOffer().getBuyer().getUserId(),
+                deal.getDealId(),
+                "Deal",
+                fee.longValueExact()
+        );
+
         deal.setStatus(DealStatus.SCHEDULED);
         deal.setUpdatedAt(LocalDateTime.now());
+
+
         dealRepository.save(deal);
     }
 

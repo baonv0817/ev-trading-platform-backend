@@ -41,6 +41,7 @@ public class StripeCheckoutService {
             throw new AppException(ErrorCode.USER_HAD_MEMBERSHIP);
         }
 
+
         long amount = plan.getPrice().longValueExact();
 
         SessionCreateParams params = SessionCreateParams.builder()

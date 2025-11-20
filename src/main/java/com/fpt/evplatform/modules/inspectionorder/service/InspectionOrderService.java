@@ -12,6 +12,7 @@ import com.fpt.evplatform.modules.inspectionorder.dto.response.CreateCheckoutRes
 import com.fpt.evplatform.modules.inspectionorder.dto.response.InspectionOrderResponse;
 import com.fpt.evplatform.modules.inspectionorder.entity.InspectionOrder;
 import com.fpt.evplatform.modules.inspectionorder.repository.InspectionOrderRepository;
+import com.fpt.evplatform.modules.payment.transaction.service.TransactionService;
 import com.fpt.evplatform.modules.salepost.entity.SalePost;
 import com.fpt.evplatform.modules.salepost.repository.SalePostRepository;
 import com.fpt.evplatform.modules.user.entity.User;
@@ -38,6 +39,7 @@ public class InspectionOrderService {
     private final InspectionOrderRepository orderRepo;
     private final SalePostRepository salePostRepo;
     private final InspectionReportFlowService reportFlowService;
+    private final TransactionService transactionService;
 
     @Value("${app.checkout.success-url}") private String successUrl;
     @Value("${app.checkout.cancel-url}")  private String cancelUrl;
@@ -72,7 +74,7 @@ public class InspectionOrderService {
         if (order.getPaymentStatus() == PaymentStatus.PAID)
             throw new IllegalStateException("Order đã thanh toán rồi");
 
-        long amount = InspectionConstants.INSPECTION_FEE_VND.longValueExact(); // 2,000,000
+        long amount = InspectionConstants.INSPECTION_FEE_VND.longValueExact();
         String currency = InspectionConstants.DEFAULT_CURRENCY.toLowerCase(Locale.ROOT);
 
         SessionCreateParams params = com.stripe.param.checkout.SessionCreateParams.builder()
@@ -115,6 +117,15 @@ public class InspectionOrderService {
         order.setPaidAt(LocalDateTime.now());
         order.setStatus(InspectionOrderStatus.SCHEDULED); // Đã lên lịch kiểm định
         orderRepo.save(order);
+
+
+        transactionService.recordPayment(
+                order.getSalePost().getSeller().getUserId(),
+                order.getOrderId(),
+                "INSPECTION",
+                InspectionConstants.INSPECTION_FEE_VND.longValueExact()
+        );
+
 
         log.info("Order #{} payment confirmed manually by user", orderId);
     }

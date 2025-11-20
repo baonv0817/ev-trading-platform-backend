@@ -3,7 +3,10 @@ package com.fpt.evplatform.modules.payment.stripe.service;
 import com.fpt.evplatform.common.enums.ErrorCode;
 import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.membership.dto.request.ActivatePlanRequest;
+import com.fpt.evplatform.modules.membership.entity.MembershipPlan;
+import com.fpt.evplatform.modules.membership.repository.MembershipPlanRepository;
 import com.fpt.evplatform.modules.membership.service.MembershipPlanService;
+import com.fpt.evplatform.modules.payment.transaction.service.TransactionService;
 import com.fpt.evplatform.modules.user.dto.response.UserPlanResponse;
 import com.fpt.evplatform.modules.user.entity.User;
 import com.fpt.evplatform.modules.user.repository.UserRepository;
@@ -19,6 +22,8 @@ public class PlanActivationFromSessionService {
 
     private final MembershipPlanService membershipPlanService;
     private final UserRepository userRepository;
+    private final MembershipPlanRepository membershipPlanRepository;
+    private final TransactionService transactionService;
 
     public UserPlanResponse activate(String sessionId) throws StripeException {
         Session session = Session.retrieve(sessionId);
@@ -46,7 +51,15 @@ public class PlanActivationFromSessionService {
         Integer userId = Integer.parseInt(mdUserId);
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         String mdPlanId = pi.getMetadata().get("planId");
+
         Integer planId = Integer.valueOf(mdPlanId);
+        MembershipPlan plan = membershipPlanRepository.findById(planId).orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+        transactionService.recordPayment(
+                user.getUserId(),
+                plan.getPlanId(),
+                "MEMBERSHIP",
+                plan.getPrice().longValueExact()
+        );
 
         // (tùy chọn) verify currentUsername ↔ mdUserId để chống kích hoạt chéo tài khoản
         // Integer currentUserId = currentUser.idFromUsername(currentUsername);

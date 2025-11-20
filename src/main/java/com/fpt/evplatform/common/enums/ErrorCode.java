@@ -59,6 +59,7 @@ public enum ErrorCode {
     VEHICLE_SEAT_COUNT_INVALID(4109, "Vehicle seatcount is invalid", HttpStatus.BAD_REQUEST),
     VEHICLE_VIN_INVALID(4110,"Vehicle vin is invalid", HttpStatus.BAD_REQUEST),
     VEHICLE_VIN_DUPLICATE(4111,"Vehicle vin already exists", HttpStatus.BAD_REQUEST),
+    SALE_POST_NOT_FOUND(4112,"Sale post not found", HttpStatus.NOT_FOUND),
     // ==================================================
     // 🔹 BRAND / MODEL / LISTING ERRORS (5000–5099)
     // ==================================================

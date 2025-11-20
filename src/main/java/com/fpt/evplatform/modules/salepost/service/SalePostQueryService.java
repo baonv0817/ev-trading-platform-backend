@@ -3,6 +3,8 @@ package com.fpt.evplatform.modules.salepost.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
+import com.fpt.evplatform.common.enums.ErrorCode;
+import com.fpt.evplatform.common.exception.AppException;
 import com.fpt.evplatform.modules.batterypost.dto.response.BatteryPostResponse;
 import com.fpt.evplatform.modules.batterypost.entity.BatteryPost;
 import com.fpt.evplatform.modules.inspectionreport.repository.InspectionReportRepository;
@@ -98,6 +100,10 @@ public class SalePostQueryService {
     public PostResponse getDetail(Integer listingId) {
         SalePost sp = salePostRepository.findByListingId(listingId)
                 .orElseThrow(() -> new NoSuchElementException("SalePost not found"));
+
+        if(!sp.getStatus().name().equals("ACTIVE")) {
+            throw new AppException(ErrorCode.SALE_POST_NOT_FOUND);
+        }
 
         PostResponse dto = new PostResponse();
         dto.setListingId(sp.getListingId());
