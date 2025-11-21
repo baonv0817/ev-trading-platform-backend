@@ -31,8 +31,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws-chat")
                 .addInterceptors(jwtHandshakeInterceptor)
                 .setHandshakeHandler(customHandshakeHandler)
-                .setAllowedOriginPatterns("http://localhost:5173")
+                .setAllowedOriginPatterns("*")
                 ;
+
 
         log.info("✅ SockJS endpoint /ws-chat registered (allowed origin: http://localhost:5173)");
     }

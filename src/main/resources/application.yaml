@@ -36,8 +36,8 @@ jwt:
 
 stripe:
   secretKey: ${STRIPE_SECRET_KEY}
-  success-url: http://localhost:5173/checkout/success?session_id={CHECKOUT_SESSION_ID}
-  cancel-url: http://localhost:5173/checkout/cancel
+  success-url: https://evplatform.netlify.app/checkout/success?session_id={CHECKOUT_SESSION_ID}
+  cancel-url: https://evplatform.netlify.app/checkout/cancel
 
 outbound:
   identity:
@@ -47,11 +47,11 @@ outbound:
 
 app:
   checkout:
-    success-url: "http://localhost:5173/inspectionCheckout/success?success=true"
-    cancel-url: "http://localhost:5173/inspectionCheckout/success?success=false"
+    success-url: "https://evplatform.netlify.app/inspectionCheckout/success?success=true"
+    cancel-url: "https://evplatform.netlify.app/inspectionCheckout/success?success=false"
   deal:
-    success-url: "http://localhost:5173/ho-so/deals/success?success=true"
-    cancel-url: "http://localhost:5173/ho-so/deals/success?success=false"
+    success-url: "https://evplatform.netlify.app/ho-so/deals/success?success=true"
+    cancel-url: "https://evplatform.netlify.app/ho-so/deals/success?success=false"
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
